@@ -36,6 +36,11 @@ class StaffTaskController extends Controller
                 ->with('error', 'Unauthorized action!');
         }
 
+        if ($task->status === 'completed') {
+            return redirect()->back()
+                ->with('error', 'Completed tasks cannot be modified!');
+        }
+
         $task->update(['status' => $request->status]);
 
         return redirect()->back()

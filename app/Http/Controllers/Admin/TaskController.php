@@ -101,6 +101,12 @@ class TaskController extends Controller
 
         $oldStatus = $task->status;
 
+        if ($oldStatus === 'completed') {
+            $request->validate([
+                'modification_reason' => 'required|string|min:5',
+            ]);
+        }
+
         $task->update([
             'room_id'     => $request->room_id,
             'task_name'   => $request->task_name,
@@ -118,11 +124,15 @@ class TaskController extends Controller
             ? " (status: {$oldStatus} → {$request->status})"
             : '';
 
+        $reasonText = $request->filled('modification_reason') 
+            ? " | Reason: {$request->modification_reason}" 
+            : '';
+
         ActivityLog::create([
             'user_id'      => Auth::id(),
             'role'         => 'admin',
             'action'       => 'Task Updated',
-            'description'  => "Task \"{$task->task_name}\" updated for Room {$room->room_number}{$statusChanged} — staff: {$staffNames}",
+            'description'  => "Task \"{$task->task_name}\" updated for Room {$room->room_number}{$statusChanged} — staff: {$staffNames}{$reasonText}",
             'subject_type' => 'Task',
             'subject_id'   => $task->id,
         ]);

@@ -141,6 +141,18 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                @if($task->status == 'completed')
+                                <div class="col-12 mb-4">
+                                    <label class="form-label fw-bold text-danger">Modification Reason (Required)</label>
+                                    <textarea name="modification_reason"
+                                              class="form-control @error('modification_reason') is-invalid @enderror"
+                                              rows="2" required placeholder="Please state the reason for modifying a completed task."></textarea>
+                                    @error('modification_reason')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                @endif
                             </div>
 
                             <div class="d-flex gap-2">
