@@ -15,7 +15,7 @@ class StaffController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Staff::latest();
+        $query = Staff::oldest();
 
         // Search filter
         if ($request->filled('search')) {
@@ -71,41 +71,6 @@ class StaffController extends Controller
 
         return redirect()->route('admin.staff.index')
             ->with('success', 'Staff added successfully!');
-    }
-
-    public function edit(Staff $staff)
-    {
-        return view('admin.staff.edit', compact('staff'));
-    }
-
-    public function update(Request $request, Staff $staff)
-    {
-        $request->validate([
-            'name'   => 'required|string|max:255',
-            'email'  => 'required|email|unique:staff,email,' . $staff->id,
-            'phone'  => 'required|string|max:20',
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        DB::transaction(function () use ($request, $staff) {
-            $staff->update([
-                'name'   => $request->name,
-                'email'  => $request->email,
-                'phone'  => $request->phone,
-                'status' => $request->status,
-            ]);
-
-            $user = User::where('staff_id', $staff->id)->first();
-            if ($user) {
-                $user->update([
-                    'name'  => $request->name,
-                    'email' => $request->email,
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.staff.index')
-            ->with('success', 'Staff updated successfully!');
     }
 
     public function destroy(Staff $staff)

@@ -6,9 +6,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            $table->unique('room_number');
-        });
+        try {
+            Schema::table('rooms', function (Blueprint $table) {
+                $table->unique('room_number');
+            });
+        } catch (\Exception $e) {
+            // Index likely already exists
+        }
     }
     public function down(): void
     {

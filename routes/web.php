@@ -37,7 +37,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('rooms', RoomController::class);
-        Route::resource('staff', StaffController::class);
+        Route::resource('staff', StaffController::class)->except(['edit', 'update']);
         Route::resource('tasks', TaskController::class);
         Route::resource('staff-reports', AdminStaffReportController::class)->only([
             'index',

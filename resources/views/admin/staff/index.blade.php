@@ -120,13 +120,11 @@
                                    class="btn btn-sm btn-info text-white">
                                     <i class="fas fa-eye"></i> View
                                 </a>
-                                <a href="{{ route('admin.staff.edit', $member->id) }}"
-                                   class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
                                 <!-- Delete triggers modal -->
                                 <button type="button" class="btn btn-sm btn-danger"
-                                        onclick="confirmDelete({{ $member->id }}, '{{ addslashes($member->name) }}')">
+                                        data-member-id="{{ $member->id }}"
+                                        data-member-name="{{ $member->name }}"
+                                        onclick="confirmDelete(this)">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </td>
@@ -149,7 +147,7 @@
 <!-- Hidden delete forms (one per staff) -->
 @foreach($staff as $member)
 <form id="delete-form-{{ $member->id }}"
-      action="{{ route('admin.staff.destroy', $member->id) }}"
+      action="{{ route('admin.staff.destroy', ['staff' => $member->id]) }}"
       method="POST" class="d-none">
     @csrf
     @method('DELETE')
@@ -188,15 +186,18 @@
 <script>
     let pendingDeleteId = null;
 
-    function confirmDelete(id, name) {
-        pendingDeleteId = id;
-        document.getElementById('deleteItemName').textContent = name;
+    function confirmDelete(button) {
+        pendingDeleteId = button.dataset.memberId;
+        document.getElementById('deleteItemName').textContent = button.dataset.memberName || 'this staff member';
         new bootstrap.Modal(document.getElementById('deleteModal')).show();
     }
 
     document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
         if (pendingDeleteId) {
-            document.getElementById('delete-form-' + pendingDeleteId).submit();
+            const form = document.getElementById('delete-form-' + pendingDeleteId);
+            if (form) {
+                form.submit();
+            }
         }
     });
 </script>
