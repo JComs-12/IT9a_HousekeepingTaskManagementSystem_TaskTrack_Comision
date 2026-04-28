@@ -118,15 +118,13 @@
                                                class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="{{ route('admin.tasks.destroy', $task->id) }}"
-                                                  method="POST" class="d-inline"
-                                                  onsubmit="return confirm('Are you sure?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
+                                            <!-- Delete triggers modal -->
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                    data-task-id="{{ $task->id }}"
+                                                    data-task-name="{{ $task->task_name }}"
+                                                    onclick="confirmDelete(this)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                         </td>
                                     </tr>
                                     @empty
@@ -219,15 +217,13 @@
                                                class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="{{ route('admin.tasks.destroy', $task->id) }}"
-                                                  method="POST" class="d-inline"
-                                                  onsubmit="return confirm('Are you sure?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
+                                            <!-- Delete triggers modal -->
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                    data-task-id="{{ $task->id }}"
+                                                    data-task-name="{{ $task->task_name }}"
+                                                    onclick="confirmDelete(this)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                         </td>
                                     </tr>
                                     @empty
@@ -244,5 +240,63 @@
                 </div>
             </div>
         </div>
+
+<!-- Hidden delete forms (one per task) -->
+@foreach($tasks as $task)
+<form id="delete-form-{{ $task->id }}"
+      action="{{ route('admin.tasks.destroy', ['task' => $task->id]) }}"
+      method="POST" class="d-none">
+    @csrf
+    @method('DELETE')
+</form>
+@endforeach
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="background-color:#16213e; border:1px solid #0f3460;">
+            <div class="modal-header" style="border-bottom:1px solid #0f3460;">
+                <h6 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2" style="color:#e94560;"></i>
+                    Confirm Delete
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p style="color:#aaaaaa; font-size:0.9rem; margin-bottom:0;">
+                    Are you sure you want to delete <strong id="deleteItemName" style="color:#ffffff;"></strong>?
+                    This cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #0f3460;">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-1"></i>Yes, Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingDeleteId = null;
+
+    function confirmDelete(button) {
+        pendingDeleteId = button.dataset.taskId;
+        document.getElementById('deleteItemName').textContent = button.dataset.taskName || 'this task';
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+        if (pendingDeleteId) {
+            const form = document.getElementById('delete-form-' + pendingDeleteId);
+            if (form) {
+                form.submit();
+            }
+        }
+    });
+</script>
     </div>
 </x-app-layout>
