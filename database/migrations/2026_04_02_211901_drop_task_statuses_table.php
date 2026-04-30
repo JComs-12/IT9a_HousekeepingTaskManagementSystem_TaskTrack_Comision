@@ -15,6 +15,12 @@ return new class extends Migration
     {
         Schema::create('task_statuses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('task_id')
+                  ->constrained('tasks')
+                  ->onDelete('cascade');
+            $table->enum('status', ['pending', 'in_progress', 'completed'])
+                  ->default('pending');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }
