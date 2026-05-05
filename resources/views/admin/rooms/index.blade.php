@@ -96,7 +96,6 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>#</th>
                             <th>Room Number</th>
                             <th>Room Type</th>
                             <th>Status</th>
@@ -106,7 +105,6 @@
                     <tbody>
                         @forelse($rooms as $room)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
                             <td><strong>{{ $room->room_number }}</strong></td>
                             <td>{{ $room->room_type }}</td>
                             <td>
@@ -132,7 +130,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="4" class="text-center text-muted py-4">
                                 <i class="fas fa-door-open fa-2x mb-2 d-block" style="color:#0f3460;"></i>
                                 No rooms found.
                             </td>

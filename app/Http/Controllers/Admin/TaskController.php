@@ -7,6 +7,8 @@ use App\Models\Task;
 use App\Models\Room;
 use App\Models\Staff;
 use App\Models\ActivityLog;
+use App\Models\User;
+use App\Notifications\NewTaskAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +17,9 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = Task::with(['room', 'staff'])->latest();
+
+        // Mark TaskCompleted notifications as read
+        Auth::user()->unreadNotifications->where('type', 'App\Notifications\TaskCompleted')->markAsRead();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -73,6 +78,12 @@ class TaskController extends Controller
             'subject_type' => 'Task',
             'subject_id'   => $task->id,
         ]);
+
+        // Notify assigned staff
+        $staffUsers = User::whereIn('staff_id', $request->staff_ids)->get();
+        foreach ($staffUsers as $user) {
+            $user->notify(new NewTaskAssigned($task));
+        }
 
         return redirect()->route('admin.tasks.index')
             ->with('success', 'Task assigned successfully!');

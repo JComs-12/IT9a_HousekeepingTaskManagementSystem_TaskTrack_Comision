@@ -18,6 +18,8 @@ class DashboardController extends Controller
         $pendingTasks = Task::where('status', 'pending')->count();
         $inProgressTasks = Task::where('status', 'in_progress')->count();
         $completedTasks = Task::where('status', 'completed')->count();
+        
+        $recentLogs = \App\Models\ActivityLog::with('user')->latest()->take(5)->get();
 
         return view('admin.dashboard.index', compact(
             'totalRooms',
@@ -25,7 +27,8 @@ class DashboardController extends Controller
             'totalTasks',
             'pendingTasks',
             'inProgressTasks',
-            'completedTasks'
+            'completedTasks',
+            'recentLogs'
         ));
     }
 

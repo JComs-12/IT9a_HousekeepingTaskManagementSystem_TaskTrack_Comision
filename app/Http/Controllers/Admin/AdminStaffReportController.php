@@ -10,6 +10,9 @@ class AdminStaffReportController extends Controller
 {
     public function index()
     {
+        // Mark NewReportFiled notifications as read
+        \Illuminate\Support\Facades\Auth::user()->unreadNotifications->where('type', 'App\Notifications\NewReportFiled')->markAsRead();
+
         $reports = StaffReport::with(['room', 'staff'])
             ->latest()
             ->get();
@@ -29,6 +32,18 @@ class AdminStaffReportController extends Controller
 
         return redirect()->route('admin.staff-reports.index')
             ->with('success', 'Report status updated!');
+    }
+
+    public function deleteSelected(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (!empty($ids)) {
+            StaffReport::whereIn('id', $ids)->delete();
+        }
+
+        return redirect()->route('admin.staff-reports.index')
+            ->with('success', 'Selected reports deleted successfully!');
     }
 }
 

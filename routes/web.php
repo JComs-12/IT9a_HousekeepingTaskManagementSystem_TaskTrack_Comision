@@ -6,16 +6,17 @@ use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\AdminStaffReportController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffTaskController;
 use App\Http\Controllers\Staff\StaffReportController;
 use App\Http\Controllers\Staff\StaffProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Redirect root to login
+// Welcome Landing Page
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('welcome');
+})->name('landing');
 
 // ===== ADMIN ROUTES =====
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -43,6 +44,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'index',
             'update',
         ]);
+        Route::delete('/staff-reports/delete-selected', [AdminStaffReportController::class, 'deleteSelected'])->name('staff-reports.delete-selected');
+        Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
+        Route::delete('/logs/delete-selected', [ActivityLogController::class, 'deleteSelected'])->name('logs.delete-selected');
     });
 
 });

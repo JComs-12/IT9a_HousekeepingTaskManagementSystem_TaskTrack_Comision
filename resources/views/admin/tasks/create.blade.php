@@ -74,10 +74,10 @@
                                                 data-bs-toggle="dropdown" 
                                                 data-bs-auto-close="outside"
                                                 aria-expanded="false"
-                                                style="background-color: #0f3460; border-color: #1a4a8a; color: #ffffff;">
-                                            <span id="selectedStaffText">Select Staff Members...</span>
+                                                style="background-color: #0f3460; border-color: #1a4a8a; color: #ffffff; overflow: hidden;">
+                                            <span id="selectedStaffText" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">Select Staff Members...</span>
                                         </button>
-                                        <ul class="dropdown-menu w-100 p-2 shadow" aria-labelledby="staffDropdownMenu" style="max-height: 250px; overflow-y: auto;">
+                                        <ul class="dropdown-menu w-100 p-2 shadow" aria-labelledby="staffDropdownMenu" style="max-height: 300px; overflow-y: auto;">
                                             @foreach($staff as $member)
                                                 <li class="dropdown-item px-2" style="background: transparent;">
                                                     <div class="form-check m-0">

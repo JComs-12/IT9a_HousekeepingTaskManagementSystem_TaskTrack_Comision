@@ -3,7 +3,7 @@
     /* Stat card hover */
     .stat-card {
         transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-        cursor: default;
+        cursor: pointer;
     }
     .stat-card:hover {
         transform: translateY(-6px);
@@ -43,42 +43,42 @@
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.rooms.index') }}'">
                 <span class="card-icon"><i class="fas fa-door-open fa-2x mb-2" style="color:#e94560;"></i></span>
                 <h3 class="fw-bold">{{ $totalRooms }}</h3>
                 <p class="text-muted mb-0">Total Rooms</p>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.staff.index') }}'">
                 <span class="card-icon"><i class="fas fa-users fa-2x mb-2" style="color:#e94560;"></i></span>
                 <h3 class="fw-bold">{{ $totalStaff }}</h3>
                 <p class="text-muted mb-0">Total Staff</p>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.tasks.index') }}'">
                 <span class="card-icon"><i class="fas fa-tasks fa-2x mb-2" style="color:#e94560;"></i></span>
                 <h3 class="fw-bold">{{ $totalTasks }}</h3>
                 <p class="text-muted mb-0">Total Tasks</p>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.tasks.index') }}'">
                 <span class="card-icon"><i class="fas fa-clock fa-2x mb-2" style="color:#ffc107;"></i></span>
                 <h3 class="fw-bold">{{ $pendingTasks }}</h3>
                 <p class="text-muted mb-0">Pending</p>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.tasks.index') }}'">
                 <span class="card-icon"><i class="fas fa-spinner fa-2x mb-2" style="color:#0dcaf0;"></i></span>
                 <h3 class="fw-bold">{{ $inProgressTasks }}</h3>
                 <p class="text-muted mb-0">In Progress</p>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card text-center p-3 stat-card">
+            <div class="card text-center p-3 stat-card" onclick="window.location.href='{{ route('admin.tasks.index') }}'">
                 <span class="card-icon"><i class="fas fa-check-circle fa-2x mb-2" style="color:#198754;"></i></span>
                 <h3 class="fw-bold">{{ $completedTasks }}</h3>
                 <p class="text-muted mb-0">Completed</p>
@@ -110,6 +110,54 @@
                 <h5 class="fw-bold">Manage Tasks</h5>
                 <p class="text-muted">Assign and track tasks</p>
                 <a href="{{ route('admin.tasks.index') }}" class="btn btn-primary">Go to Tasks</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-history me-2"></i>Recent Activity</span>
+                    <a href="{{ route('admin.logs.index') }}" class="btn btn-sm btn-outline-light text-white">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentLogs as $log)
+                                    <tr>
+                                        <td>{{ $log->created_at->diffForHumans() }}</td>
+                                        <td>
+                                            @if($log->user)
+                                                <span class="badge bg-{{ $log->role === 'admin' ? 'primary' : 'secondary' }}">
+                                                    {{ $log->user->name }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-dark">System/Deleted</span>
+                                            @endif
+                                        </td>
+                                        <td><span class="badge bg-info text-dark">{{ $log->action }}</span></td>
+                                        <td>{{ $log->description }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">No recent activity found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

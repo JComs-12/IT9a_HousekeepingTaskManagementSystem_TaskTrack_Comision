@@ -119,13 +119,16 @@
                                         </td>
                                         <td>
                                             <form action="{{ route('staff.tasks.updateStatus', $task->id) }}"
-                                                  method="POST">
+                                                  method="POST"
+                                                  id="statusForm-{{ $task->id }}">
                                                 @csrf
                                                 @method('PATCH')
                                                 <select name="status"
-                                                        class="form-select form-select-sm"
-                                                        style="width: auto;"
-                                                        onchange="if(this.value === 'completed') { if(confirm('Are you sure the tasks are complete? This action cannot be undone.')) { this.form.submit(); } else { this.value = '{{ $task->status }}'; return false; } } else { this.form.submit(); }">
+                                                        class="form-select form-select-sm status-select"
+                                                        data-task-id="{{ $task->id }}"
+                                                        data-task-name="{{ $task->task_name }}"
+                                                        data-current-status="{{ $task->status }}"
+                                                        style="width: auto;">
                                                     <option value="pending" {{ $task->status == 'pending' ? 'selected' : '' }}>
                                                         Pending
                                                     </option>
@@ -252,4 +255,106 @@
             </div>
         </div>
     </div>
+
+    <!-- Task Status Confirmation Modal -->
+    <div class="modal fade" id="statusConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" style="background-color:#16213e; border:1px solid #0f3460;">
+                <div class="modal-header" style="border-bottom:1px solid #0f3460;">
+                    <h6 class="modal-title">
+                        <i class="fas fa-check-circle me-2" style="color:#10b981;"></i>
+                        <span id="confirmTitle">Confirm Status Change</span>
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color:#aaaaaa; font-size:0.9rem; margin-bottom:15px;" id="confirmMessage">
+                        Are you sure you want to change the task status?
+                    </p>
+                    <div style="background: rgba(233,69,96,0.1); border-left: 3px solid #e94560; padding: 12px; border-radius: 5px;">
+                        <small style="color:#ffffff;">
+                            <i class="fas fa-info-circle me-2" style="color:#e94560;"></i>
+                            <span id="taskDetail"></span>
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #0f3460;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" id="confirmStatusBtn">
+                        <i class="fas fa-check me-1"></i>Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pendingStatusChange = null;
+
+        // Handle status select change
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', function(e) {
+                const newStatus = this.value;
+                const currentStatus = this.dataset.currentStatus;
+                const taskId = this.dataset.taskId;
+                const taskName = this.dataset.taskName;
+                const form = document.getElementById('statusForm-' + taskId);
+
+                // If changing to completed, show confirmation
+                if (newStatus === 'completed') {
+                    pendingStatusChange = {
+                        taskId: taskId,
+                        taskName: taskName,
+                        newStatus: newStatus,
+                        form: form,
+                        select: this
+                    };
+
+                    // Update modal content
+                    document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-check-circle me-2" style="color:#10b981;"></i>Complete Task?';
+                    document.getElementById('confirmMessage').innerHTML = 
+                        'Are you sure you want to mark <strong style="color:#ffffff;">' + taskName + '</strong> as completed? This action cannot be undone.';
+                    document.getElementById('taskDetail').innerHTML = 
+                        '<strong>Task:</strong> ' + taskName + '<br><strong>Action:</strong> Changing to Completed';
+
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('statusConfirmModal'));
+                    modal.show();
+                } else {
+                    // For other status changes, submit immediately
+                    form.submit();
+                }
+            });
+        });
+
+        // Handle confirmation button
+        document.getElementById('confirmStatusBtn').addEventListener('click', function() {
+            if (pendingStatusChange) {
+                const form = pendingStatusChange.form;
+                
+                // Hide modal
+                const modalElement = document.getElementById('statusConfirmModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+
+                // Submit form
+                setTimeout(() => {
+                    form.submit();
+                }, 300);
+            }
+        });
+
+        // Reset pending change when modal is closed
+        document.getElementById('statusConfirmModal').addEventListener('hidden.bs.modal', function() {
+            if (pendingStatusChange && pendingStatusChange.select) {
+                // Reset select to current value
+                pendingStatusChange.select.value = pendingStatusChange.select.dataset.currentStatus;
+            }
+            pendingStatusChange = null;
+        });
+    </script>
 </x-staff-layout>

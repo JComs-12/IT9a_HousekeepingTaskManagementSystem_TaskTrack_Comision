@@ -7,7 +7,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,27 +16,70 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #e94560;
+            --primary-hover: #d13d56;
+            --bg-color: #0b0f19;
+            --text-main: #ffffff;
+            --text-muted: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
         * {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         body {
-            background-color: #1a1a2e;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Animated Background Gradients */
+        .bg-glow-1 {
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(233,69,96,0.15) 0%, rgba(11,15,25,0) 70%);
+            z-index: -1;
+            animation: pulse 8s infinite alternate;
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, rgba(11,15,25,0) 70%);
+            z-index: -1;
+            animation: pulse 12s infinite alternate-reverse;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
         .register-container {
             width: 100%;
             max-width: 500px;
             padding: 20px;
+            z-index: 1;
         }
         .register-card {
-            background-color: #16213e;
-            border: 1px solid #0f3460;
-            border-radius: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
             padding: 40px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         .register-logo {
             text-align: center;
@@ -44,7 +87,7 @@
         }
         .register-logo i {
             font-size: 3rem;
-            color: #e94560;
+            color: var(--primary-color);
             display: none;
         }
         .register-logo img {
@@ -52,96 +95,125 @@
             height: 72px;
             object-fit: cover;
             border-radius: 50%;
-            background-color: #ffffff;
+            background-color: transparent;
             margin-bottom: 10px;
         }
         .register-logo h2 {
-            font-weight: 700;
-            color: #ffffff;
+            font-weight: 800;
+            color: var(--text-main);
             margin-top: 10px;
+            letter-spacing: -0.5px;
         }
         .register-logo p {
-            color: #aaaaaa;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
         .form-label {
-            color: #ffffff;
+            color: var(--text-main);
             font-weight: 500;
         }
         .form-control {
-            background-color: #0f3460;
-            border: 1px solid #e94560;
-            color: #ffffff;
-            border-radius: 8px;
+            background-color: rgba(11, 15, 25, 0.5);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 10px;
             padding: 12px 15px;
+            transition: all 0.3s;
         }
         .form-control:focus {
-            background-color: #0f3460;
-            border-color: #e94560;
-            color: #ffffff;
+            background-color: rgba(11, 15, 25, 0.8);
+            border-color: var(--primary-color);
+            color: var(--text-main);
             box-shadow: 0 0 0 0.2rem rgba(233,69,96,0.25);
         }
         .form-control::placeholder {
-            color: #aaaaaa;
+            color: rgba(255, 255, 255, 0.3);
         }
         .btn-register {
-            background-color: #e94560;
-            border-color: #e94560;
+            background-color: var(--primary-color);
+            border: none;
             color: #ffffff;
             width: 100%;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 50px;
             font-weight: 600;
             font-size: 1rem;
             margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233,69,96,0.3);
         }
         .btn-register:hover {
-            background-color: #c73652;
-            border-color: #c73652;
+            background-color: var(--primary-hover);
             color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233,69,96,0.4);
         }
+        /* Password wrapper keeps the eye btn flush */
+        .password-wrapper { position: relative; }
+        .password-wrapper .toggle-pwd {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #aaaaaa;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .password-wrapper .toggle-pwd:hover { color: #e94560; }
+        .password-wrapper .form-control { padding-right: 42px; }
         .login-link {
             text-align: center;
             margin-top: 20px;
-            color: #aaaaaa;
+            color: var(--text-muted);
         }
         .login-link a {
-            color: #e94560;
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.2s;
         }
         .login-link a:hover {
-            text-decoration: underline;
+            color: var(--primary-hover);
         }
         .alert-danger {
-            background-color: #2d1b1b;
-            border-color: #e94560;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
             color: #ff6b6b;
-            border-radius: 8px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
         }
         .quote {
             text-align: center;
-            color: #aaaaaa;
+            color: rgba(255, 255, 255, 0.4);
             font-style: italic;
             font-size: 0.85rem;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #0f3460;
+            border-top: 1px solid var(--card-border);
         }
     </style>
 </head>
 <body>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
     <div class="register-container">
         <div class="register-card">
 
             <!-- Logo -->
             <div class="register-logo">
-                <img src="{{ asset('images/logo.png') }}"
-                     alt="TaskTrack Logo"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-                <i class="fas fa-broom"></i>
-                <h2>TaskTrack</h2>
-                <p>Create your account</p>
+                <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">
+                    <img src="{{ asset('images/logo.png') }}"
+                         alt="TaskTrack Logo"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+                    <i class="fas fa-broom"></i>
+                    <h2>TaskTrack</h2>
+                    <p>Create your account</p>
+                </a>
             </div>
 
             <!-- Error Messages -->
@@ -187,11 +259,17 @@
                     <label class="form-label">
                         <i class="fas fa-lock me-2" style="color: #e94560;"></i>Password
                     </label>
-                    <input type="password"
-                           name="password"
-                           class="form-control"
-                           placeholder="Enter your password"
-                           required>
+                    <div class="password-wrapper">
+                        <input type="password"
+                               name="password"
+                               id="registerPassword"
+                               class="form-control"
+                               placeholder="Enter your password"
+                               required>
+                        <button type="button" class="toggle-pwd" onclick="toggleRegisterPassword()">
+                            <i class="fas fa-eye" id="registerPasswordIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Confirm Password -->
@@ -199,11 +277,17 @@
                     <label class="form-label">
                         <i class="fas fa-lock me-2" style="color: #e94560;"></i>Confirm Password
                     </label>
-                    <input type="password"
-                           name="password_confirmation"
-                           class="form-control"
-                           placeholder="Confirm your password"
-                           required>
+                    <div class="password-wrapper">
+                        <input type="password"
+                               name="password_confirmation"
+                               id="registerConfirmPassword"
+                               class="form-control"
+                               placeholder="Confirm your password"
+                               required>
+                        <button type="button" class="toggle-pwd" onclick="toggleRegisterConfirmPassword()">
+                            <i class="fas fa-eye" id="registerConfirmPasswordIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Register Button -->
@@ -229,5 +313,30 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleRegisterPassword() {
+            const input = document.getElementById('registerPassword');
+            const icon  = document.getElementById('registerPasswordIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function toggleRegisterConfirmPassword() {
+            const input = document.getElementById('registerConfirmPassword');
+            const icon  = document.getElementById('registerConfirmPasswordIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

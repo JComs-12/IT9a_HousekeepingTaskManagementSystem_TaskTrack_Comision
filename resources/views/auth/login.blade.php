@@ -6,26 +6,68 @@
     <title>TaskTrack - Login</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        * { font-family: 'Poppins', sans-serif; }
+        :root {
+            --primary-color: #e94560;
+            --primary-hover: #d13d56;
+            --bg-color: #0b0f19;
+            --text-main: #ffffff;
+            --text-muted: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+        * { font-family: 'Inter', sans-serif; }
         body {
-            background-color: #1a1a2e;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
-        .login-container { width: 100%; max-width: 450px; padding: 20px; }
+
+        /* Animated Background Gradients */
+        .bg-glow-1 {
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(233,69,96,0.15) 0%, rgba(11,15,25,0) 70%);
+            z-index: -1;
+            animation: pulse 8s infinite alternate;
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, rgba(11,15,25,0) 70%);
+            z-index: -1;
+            animation: pulse 12s infinite alternate-reverse;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .login-container { width: 100%; max-width: 450px; padding: 20px; z-index: 1; }
         .login-card {
-            background-color: #16213e;
-            border: 1px solid #0f3460;
-            border-radius: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
             padding: 40px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         .login-logo { text-align: center; margin-bottom: 30px; }
         .login-logo img {
@@ -33,29 +75,30 @@
             height: 72px;
             object-fit: cover;
             border-radius: 50%;
-            background-color: #ffffff;
+            background-color: transparent;
             margin-bottom: 10px;
         }
         /* Fallback icon shown only if logo.png fails to load */
-        .login-logo .fallback-icon { font-size: 3rem; color: #e94560; display: none; }
-        .login-logo h2 { font-weight: 700; color: #ffffff; margin-top: 6px; }
-        .login-logo p  { color: #aaaaaa; font-size: 0.9rem; }
+        .login-logo .fallback-icon { font-size: 3rem; color: var(--primary-color); display: none; }
+        .login-logo h2 { font-weight: 800; color: var(--text-main); margin-top: 6px; letter-spacing: -0.5px; }
+        .login-logo p  { color: var(--text-muted); font-size: 0.95rem; }
 
-        .form-label { color: #ffffff; font-weight: 500; }
+        .form-label { color: var(--text-main); font-weight: 500; }
         .form-control {
-            background-color: #0f3460;
-            border: 1px solid #e94560;
-            color: #ffffff;
-            border-radius: 8px;
+            background-color: rgba(11, 15, 25, 0.5);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 10px;
             padding: 12px 15px;
+            transition: all 0.3s;
         }
         .form-control:focus {
-            background-color: #0f3460;
-            border-color: #e94560;
-            color: #ffffff;
+            background-color: rgba(11, 15, 25, 0.8);
+            border-color: var(--primary-color);
+            color: var(--text-main);
             box-shadow: 0 0 0 0.2rem rgba(233,69,96,0.25);
         }
-        .form-control::placeholder { color: #aaaaaa; }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.3); }
 
         /* Password wrapper keeps the eye btn flush */
         .password-wrapper { position: relative; }
@@ -76,23 +119,23 @@
         .password-wrapper .form-control { padding-right: 42px; }
 
         .btn-login {
-            background-color: #e94560;
-            border-color: #e94560;
+            background-color: var(--primary-color);
+            border: none;
             color: #ffffff;
             width: 100%;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 50px;
             font-weight: 600;
             font-size: 1rem;
             margin-top: 10px;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233,69,96,0.3);
         }
         .btn-login:hover {
-            background-color: #c73652;
-            border-color: #c73652;
+            background-color: var(--primary-hover);
             color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(233,69,96,0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233,69,96,0.4);
         }
 
         /* Remember me — white text */
@@ -102,45 +145,45 @@
         .forgot-link { color: #aaaaaa; font-size: 0.85rem; text-decoration: none; }
         .forgot-link:hover { color: #e94560; }
 
-        .register-link { text-align: center; margin-top: 20px; color: #aaaaaa; }
-        .register-link a { color: #e94560; text-decoration: none; font-weight: 600; }
-        .register-link a:hover { text-decoration: underline; }
+        .register-link { text-align: center; margin-top: 20px; color: var(--text-muted); }
+        .register-link a { color: var(--primary-color); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .register-link a:hover { color: var(--primary-hover); }
 
         .alert-danger {
-            background-color: #2d1b1b;
-            border-color: #e94560;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
             color: #ff6b6b;
-            border-radius: 8px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
         }
         .quote {
             text-align: center;
-            color: #aaaaaa;
+            color: rgba(255, 255, 255, 0.4);
             font-style: italic;
             font-size: 0.85rem;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #0f3460;
+            border-top: 1px solid var(--card-border);
         }
     </style>
 </head>
 <body>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
     <div class="login-container">
         <div class="login-card">
 
             <!-- Logo -->
             <div class="login-logo">
-                {{--
-                    LOGO: The file public/images/logo.png is already in your project.
-                    The <img> below points to it via asset(). If you ever move the file,
-                    update the path here. The fallback icon shows automatically if the
-                    image fails to load (via onerror).
-                --}}
-                <img src="{{ asset('images/logo.png') }}"
-                     alt="TaskTrack Logo"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-                <i class="fas fa-broom fallback-icon"></i>
-                <h2>TaskTrack</h2>
-                <p>Housekeeping Task Management System</p>
+                <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">
+                    <img src="{{ asset('images/logo.png') }}"
+                         alt="TaskTrack Logo"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+                    <i class="fas fa-broom fallback-icon"></i>
+                    <h2>TaskTrack</h2>
+                    <p>Housekeeping Task Management System</p>
+                </a>
             </div>
 
             <!-- Session Status -->
@@ -185,7 +228,7 @@
                     </div>
                 </div>
 
-                <!-- Remember Me & Forgot Password -->
+                <!-- Remember Me -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input"
@@ -194,11 +237,6 @@
                             Remember me
                         </label>
                     </div>
-                    @if(Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-link">
-                            Forgot password?
-                        </a>
-                    @endif
                 </div>
 
                 <!-- Login Button -->

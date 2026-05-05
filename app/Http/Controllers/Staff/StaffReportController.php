@@ -39,13 +39,27 @@ class StaffReportController extends Controller
             'description' => 'required|string|max:2000',
         ]);
 
-        StaffReport::create([
+        $report = StaffReport::create([
             'staff_id' => $staffId,
             'room_id' => $request->room_id,
             'report_type' => $request->report_type,
             'description' => $request->description,
             'status' => 'pending',
         ]);
+
+        \App\Models\ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'role'         => 'staff',
+            'action'       => 'Report Filed',
+            'description'  => "Staff " . Auth::user()->name . " filed a " . $request->report_type . " report.",
+            'subject_type' => 'StaffReport',
+            'subject_id'   => $report->id,
+        ]);
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\NewReportFiled($report));
+        }
 
         return redirect()->route('staff.reports.index')
             ->with('success', 'Report submitted successfully!');

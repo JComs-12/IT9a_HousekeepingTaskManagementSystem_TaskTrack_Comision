@@ -244,7 +244,7 @@
 <!-- Hidden delete forms (one per task) -->
 @foreach($tasks as $task)
 <form id="delete-form-{{ $task->id }}"
-      action="{{ route('admin.tasks.destroy', ['task' => $task->id]) }}"
+      action="{{ route('admin.tasks.destroy', $task) }}"
       method="POST" class="d-none">
     @csrf
     @method('DELETE')

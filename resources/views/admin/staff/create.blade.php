@@ -47,10 +47,16 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Password</label>
-                                    <input type="password"
-                                           name="password"
-                                           class="form-control @error('password') is-invalid @enderror"
-                                           placeholder="Enter password">
+                                    <div class="password-wrapper">
+                                        <input type="password"
+                                               name="password"
+                                               id="staffPassword"
+                                               class="form-control @error('password') is-invalid @enderror"
+                                               placeholder="Enter password">
+                                        <button type="button" class="toggle-pwd" onclick="toggleStaffPassword()">
+                                            <i class="fas fa-eye" id="staffPasswordIcon"></i>
+                                        </button>
+                                    </div>
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -58,10 +64,16 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Confirm Password</label>
-                                    <input type="password"
-                                           name="password_confirmation"
-                                           class="form-control @error('password_confirmation') is-invalid @enderror"
-                                           placeholder="Confirm password">
+                                    <div class="password-wrapper">
+                                        <input type="password"
+                                               name="password_confirmation"
+                                               id="staffConfirmPassword"
+                                               class="form-control @error('password_confirmation') is-invalid @enderror"
+                                               placeholder="Confirm password">
+                                        <button type="button" class="toggle-pwd" onclick="toggleStaffConfirmPassword()">
+                                            <i class="fas fa-eye" id="staffConfirmPasswordIcon"></i>
+                                        </button>
+                                    </div>
                                     @error('password_confirmation')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -107,4 +119,55 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .toggle-pwd {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #aaaaaa;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .password-wrapper .toggle-pwd:hover {
+            color: #e94560;
+        }
+        .password-wrapper .form-control {
+            padding-right: 42px;
+        }
+    </style>
+
+    <script>
+        function toggleStaffPassword() {
+            const input = document.getElementById('staffPassword');
+            const icon = document.getElementById('staffPasswordIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function toggleStaffConfirmPassword() {
+            const input = document.getElementById('staffConfirmPassword');
+            const icon = document.getElementById('staffConfirmPasswordIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
 </x-app-layout>

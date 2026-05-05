@@ -12,6 +12,9 @@ class StaffTaskController extends Controller
     {
         $staffId = Auth::user()->staff_id;
 
+        // Mark NewTaskAssigned notifications as read
+        Auth::user()->unreadNotifications->where('type', 'App\Notifications\NewTaskAssigned')->markAsRead();
+
         $tasks = Task::with(['room', 'staff'])
             ->whereHas('staff', function ($q) use ($staffId) {
                 $q->where('staff.id', $staffId);
@@ -42,6 +45,22 @@ class StaffTaskController extends Controller
         }
 
         $task->update(['status' => $request->status]);
+
+        \App\Models\ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'role'         => 'staff',
+            'action'       => 'Task Status Updated',
+            'description'  => "Staff " . Auth::user()->name . " updated task \"{$task->task_name}\" status to {$request->status}.",
+            'subject_type' => 'Task',
+            'subject_id'   => $task->id,
+        ]);
+
+        if ($request->status === 'completed') {
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\TaskCompleted($task));
+            }
+        }
 
         return redirect()->back()
             ->with('success', 'Task status updated!');
