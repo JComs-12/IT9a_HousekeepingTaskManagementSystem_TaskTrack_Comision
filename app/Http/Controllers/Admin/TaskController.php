@@ -148,6 +148,13 @@ class TaskController extends Controller
             'subject_id'   => $task->id,
         ]);
 
+        if ($oldStatus === 'completed' && $request->status !== 'completed') {
+            $assignedStaffUsers = User::whereIn('staff_id', $request->staff_ids)->get();
+            foreach ($assignedStaffUsers as $user) {
+                $user->notify(new NewTaskAssigned($task));
+            }
+        }
+
         return redirect()->route('admin.tasks.index')
             ->with('success', 'Task updated successfully!');
     }
@@ -168,5 +175,31 @@ class TaskController extends Controller
 
         return redirect()->route('admin.tasks.index')
             ->with('success', 'Task deleted successfully!');
+    }
+
+    public function deleteSelected(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:tasks,id',
+        ]);
+
+        $taskIds = $request->ids;
+        $tasks = Task::whereIn('id', $taskIds)->get();
+        $deletedNames = $tasks->pluck('task_name')->implode(', ');
+
+        Task::whereIn('id', $taskIds)->delete();
+
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'role'         => 'admin',
+            'action'       => 'Tasks Deleted',
+            'description'  => "Deleted tasks: {$deletedNames}",
+            'subject_type' => 'Task',
+            'subject_id'   => null,
+        ]);
+
+        return redirect()->route('reports.index')
+            ->with('success', 'Selected tasks deleted successfully.');
     }
 }

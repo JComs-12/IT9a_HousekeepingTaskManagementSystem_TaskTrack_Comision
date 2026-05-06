@@ -40,13 +40,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::resource('rooms', RoomController::class);
         Route::resource('staff', StaffController::class)->except(['edit', 'update']);
         Route::resource('tasks', TaskController::class);
+        Route::delete('/tasks/delete-selected', [TaskController::class, 'deleteSelected'])->name('tasks.delete-selected');
         Route::resource('staff-reports', AdminStaffReportController::class)->only([
             'index',
             'update',
+            'destroy',
         ]);
         Route::delete('/staff-reports/delete-selected', [AdminStaffReportController::class, 'deleteSelected'])->name('staff-reports.delete-selected');
         Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::delete('/logs/delete-selected', [ActivityLogController::class, 'deleteSelected'])->name('logs.delete-selected');
+        Route::delete('/logs/{log}', [ActivityLogController::class, 'destroy'])->name('logs.destroy');
     });
 
 });
@@ -62,6 +65,9 @@ Route::middleware(['auth', 'staff'])->group(function () {
 
     Route::patch('/staff/tasks/{task}', [StaffTaskController::class, 'updateStatus'])
         ->name('staff.tasks.updateStatus');
+
+    Route::delete('/staff/tasks/{task}', [StaffTaskController::class, 'destroy'])
+        ->name('staff.tasks.destroy');
 
     Route::get('/staff/profile', [StaffProfileController::class, 'edit'])
         ->name('staff.profile.edit');

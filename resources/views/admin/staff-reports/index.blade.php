@@ -27,7 +27,7 @@
                         <button type="button" class="btn btn-sm btn-secondary" id="selectAllBtn">
                             <i class="fas fa-check-square me-1"></i>Select All
                         </button>
-                        <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" style="display: none;">
+                        <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" disabled>
                             <i class="fas fa-trash me-1"></i>Delete Selected
                         </button>
                     </div>
@@ -38,9 +38,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="width: 40px;">
-                                    <input type="checkbox" id="selectAllCheckbox" class="form-check-input" style="cursor: pointer;">
-                                </th>
+                                <th style="width: 40px;"></th>
                                 <th>#</th>
                                 <th>Staff</th>
                                 <th>Room</th>
@@ -48,7 +46,7 @@
                                 <th>Description</th>
                                 <th>Status</th>
                                 <th>Submitted</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,6 +89,9 @@
                                         @else
                                             <span class="text-muted">-</span>
                                         @endif
+                                        <button type="button" class="btn btn-sm btn-danger ms-1" onclick="deleteReport({{ $report->id }})">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -135,62 +136,91 @@
     </div>
 
     <script>
-        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-        const reportCheckboxes = document.querySelectorAll('.report-checkbox');
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        const deleteReportsModal = new bootstrap.Modal(document.getElementById('deleteReportsModal'));
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportCheckboxes = document.querySelectorAll('.report-checkbox');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            const deleteReportsModal = new bootstrap.Modal(document.getElementById('deleteReportsModal'));
+            const confirmDeleteReportsBtn = document.getElementById('confirmDeleteReportsBtn');
 
-        function updateDeleteButton() {
-            const checkedCount = document.querySelectorAll('.report-checkbox:checked').length;
-            if (checkedCount > 0) {
-                deleteSelectedBtn.style.display = 'block';
-            } else {
-                deleteSelectedBtn.style.display = 'none';
-                selectAllCheckbox.checked = false;
+            function updateDeleteButton() {
+                const checkedCount = document.querySelectorAll('.report-checkbox:checked').length;
+                const totalCount = reportCheckboxes.length;
+                
+                if (deleteSelectedBtn) {
+                    deleteSelectedBtn.disabled = checkedCount === 0;
+                }
+
+                if (selectAllBtn) {
+                    if (checkedCount === totalCount && totalCount > 0) {
+                        selectAllBtn.classList.remove('btn-secondary');
+                        selectAllBtn.classList.add('btn-success');
+                    } else {
+                        selectAllBtn.classList.remove('btn-success');
+                        selectAllBtn.classList.add('btn-secondary');
+                    }
+                }
             }
-        }
 
-        selectAllCheckbox.addEventListener('change', function() {
-            reportCheckboxes.forEach(cb => cb.checked = this.checked);
+            reportCheckboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
+
+            if (deleteSelectedBtn) {
+                deleteSelectedBtn.addEventListener('click', function() {
+                    const count = document.querySelectorAll('.report-checkbox:checked').length;
+                    document.getElementById('reportsCount').textContent = count;
+                    deleteReportsModal.show();
+                });
+            }
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function() {
+                    const allChecked = Array.from(reportCheckboxes).every(cb => cb.checked);
+                    reportCheckboxes.forEach(cb => cb.checked = !allChecked);
+                    updateDeleteButton();
+                });
+            }
+
+            if (confirmDeleteReportsBtn) {
+                confirmDeleteReportsBtn.addEventListener('click', function() {
+                    const selectedIds = Array.from(document.querySelectorAll('.report-checkbox:checked'))
+                        .map(cb => cb.dataset.reportId);
+
+                    if (selectedIds.length > 0) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/admin/staff-reports/delete-selected';
+
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                        form.innerHTML = `
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            ${selectedIds.map(id => `<input type="hidden" name="ids[]" value="${id}">`).join('')}
+                        `;
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
             updateDeleteButton();
         });
 
-        reportCheckboxes.forEach(cb => {
-            cb.addEventListener('change', updateDeleteButton);
-        });
-
-        deleteSelectedBtn.addEventListener('click', function() {
-            const count = document.querySelectorAll('.report-checkbox:checked').length;
-            document.getElementById('reportsCount').textContent = count;
-            deleteReportsModal.show();
-        });
-
-        selectAllBtn.addEventListener('click', function() {
-            selectAllCheckbox.checked = !selectAllCheckbox.checked;
-            reportCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-            updateDeleteButton();
-        });
-
-        document.getElementById('confirmDeleteReportsBtn').addEventListener('click', function() {
-            const selectedIds = Array.from(document.querySelectorAll('.report-checkbox:checked'))
-                .map(cb => cb.dataset.reportId);
-            
-            if (selectedIds.length > 0) {
+        function deleteReport(reportId) {
+            if (confirm('Are you sure you want to delete this staff report? This action cannot be undone.')) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("admin.staff-reports.delete-selected") }}';
-                
+                form.action = '/admin/staff-reports/' + reportId;
+
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
                 form.innerHTML = `
                     <input type="hidden" name="_token" value="${csrfToken}">
                     <input type="hidden" name="_method" value="DELETE">
-                    ${selectedIds.map(id => `<input type="hidden" name="ids[]" value="${id}">`).join('')}
                 `;
-                
+
                 document.body.appendChild(form);
                 form.submit();
             }
-        });
+        }
     </script>
 </x-app-layout>

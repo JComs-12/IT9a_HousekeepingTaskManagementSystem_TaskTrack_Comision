@@ -29,11 +29,8 @@
                 <h2 class="fw-bold">
                     <i class="fas fa-users me-2" style="color:#e94560;"></i>Staff
                 </h2>
-                <p class="text-muted">Manage all hotel staff</p>
+                <p class="text-muted">Manage all staff accounts created through registration</p>
             </div>
-            <a href="{{ route('admin.staff.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add Staff
-            </a>
         </div>
     </div>
 

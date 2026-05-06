@@ -212,7 +212,7 @@
                          onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
                     <i class="fas fa-broom"></i>
                     <h2>TaskTrack</h2>
-                    <p>Create your account</p>
+                    <p>Create your staff account</p>
                 </a>
             </div>
 
@@ -228,20 +228,31 @@
             <form method="POST" action="{{ route('register') }}">
                 @csrf
 
-                <!-- Name -->
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="fas fa-user me-2" style="color: #e94560;"></i>Name
-                    </label>
-                    <input type="text"
-                           name="name"
-                           class="form-control"
-                           placeholder="Enter your full name"
-                           value="{{ old('name') }}"
-                           required autofocus>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-user me-2" style="color: #e94560;"></i>First Name
+                        </label>
+                        <input type="text"
+                               name="first_name"
+                               class="form-control"
+                               placeholder="First name"
+                               value="{{ old('first_name') }}"
+                               required autofocus>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-user me-2" style="color: #e94560;"></i>Last Name
+                        </label>
+                        <input type="text"
+                               name="last_name"
+                               class="form-control"
+                               placeholder="Last name"
+                               value="{{ old('last_name') }}"
+                               required>
+                    </div>
                 </div>
 
-                <!-- Email -->
                 <div class="mb-3">
                     <label class="form-label">
                         <i class="fas fa-envelope me-2" style="color: #e94560;"></i>Email
@@ -252,6 +263,56 @@
                            placeholder="Enter your email"
                            value="{{ old('email') }}"
                            required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-phone me-2" style="color: #e94560;"></i>Phone
+                    </label>
+                    <input type="text"
+                           name="phone"
+                           class="form-control"
+                           placeholder="Enter your phone number"
+                           value="{{ old('phone') }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt me-2" style="color: #e94560;"></i>Address
+                    </label>
+                    <input type="text"
+                           name="address"
+                           class="form-control"
+                           placeholder="Enter your address"
+                           value="{{ old('address') }}"
+                           required>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-calendar-alt me-2" style="color: #e94560;"></i>Birthdate
+                        </label>
+                        <input type="date"
+                               name="birthdate"
+                               class="form-control"
+                               value="{{ old('birthdate') }}"
+                               required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-user-clock me-2" style="color: #e94560;"></i>Age
+                        </label>
+                        <input type="number"
+                               name="age"
+                               class="form-control"
+                               placeholder="Enter your age"
+                               value="{{ old('age') }}"
+                               min="16"
+                               max="120"
+                               required>
+                    </div>
                 </div>
 
                 <!-- Password -->

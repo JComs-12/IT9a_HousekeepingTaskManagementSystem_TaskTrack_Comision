@@ -9,7 +9,7 @@
                     <button type="button" class="btn btn-sm btn-secondary" id="selectAllBtn">
                         <i class="fas fa-check-square me-1"></i>Select All
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" style="display: none;">
+                    <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" disabled>
                         <i class="fas fa-trash me-1"></i>Delete Selected
                     </button>
                 </div>
@@ -20,14 +20,13 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 40px;">
-                                <input type="checkbox" id="selectAllCheckbox" class="form-check-input" style="cursor: pointer;">
-                            </th>
+                            <th style="width: 40px;"></th>
                             <th>Date / Time</th>
                             <th>User</th>
                             <th>Role</th>
                             <th>Action</th>
                             <th>Description</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,10 +56,16 @@
                                 </td>
                                 <td><span class="badge bg-info text-dark">{{ $log->action }}</span></td>
                                 <td>{{ $log->description }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                            onclick="deleteLog({{ $log->id }})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-5">
+                                <td colspan="7" class="text-center text-muted py-5">
                                     <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.5;"></i>
                                     <p>No activity logs found.</p>
                                 </td>
@@ -70,6 +75,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -100,63 +106,91 @@
     </div>
 
     <script>
-        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-        const logCheckboxes = document.querySelectorAll('.log-checkbox');
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        const deleteLogsModal = new bootstrap.Modal(document.getElementById('deleteLogsModal'));
+        document.addEventListener('DOMContentLoaded', function() {
+            const logCheckboxes = document.querySelectorAll('.log-checkbox');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            const deleteLogsModal = new bootstrap.Modal(document.getElementById('deleteLogsModal'));
+            const confirmDeleteLogsBtn = document.getElementById('confirmDeleteLogsBtn');
 
-        function updateDeleteButton() {
-            const checkedCount = document.querySelectorAll('.log-checkbox:checked').length;
-            if (checkedCount > 0) {
-                deleteSelectedBtn.style.display = 'block';
-            } else {
-                deleteSelectedBtn.style.display = 'none';
-                selectAllCheckbox.checked = false;
+            function updateDeleteButton() {
+                const checkedCount = document.querySelectorAll('.log-checkbox:checked').length;
+                const totalCount = logCheckboxes.length;
+                
+                if (deleteSelectedBtn) {
+                    deleteSelectedBtn.disabled = checkedCount === 0;
+                }
+
+                if (selectAllBtn) {
+                    if (checkedCount === totalCount && totalCount > 0) {
+                        selectAllBtn.classList.remove('btn-secondary');
+                        selectAllBtn.classList.add('btn-success');
+                    } else {
+                        selectAllBtn.classList.remove('btn-success');
+                        selectAllBtn.classList.add('btn-secondary');
+                    }
+                }
             }
-        }
 
-        selectAllCheckbox.addEventListener('change', function() {
-            logCheckboxes.forEach(cb => cb.checked = this.checked);
+            logCheckboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
+
+            if (deleteSelectedBtn) {
+                deleteSelectedBtn.addEventListener('click', function() {
+                    const count = document.querySelectorAll('.log-checkbox:checked').length;
+                    document.getElementById('logsCount').textContent = count;
+                    deleteLogsModal.show();
+                });
+            }
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function() {
+                    const allChecked = Array.from(logCheckboxes).every(cb => cb.checked);
+                    logCheckboxes.forEach(cb => cb.checked = !allChecked);
+                    updateDeleteButton();
+                });
+            }
+
+            if (confirmDeleteLogsBtn) {
+                confirmDeleteLogsBtn.addEventListener('click', function() {
+                    const selectedIds = Array.from(document.querySelectorAll('.log-checkbox:checked'))
+                        .map(cb => cb.dataset.logId);
+
+                    if (selectedIds.length > 0) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/admin/logs/delete-selected';
+
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                        form.innerHTML = `
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            ${selectedIds.map(id => `<input type="hidden" name="ids[]" value="${id}">`).join('')}
+                        `;
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
             updateDeleteButton();
         });
 
-        logCheckboxes.forEach(cb => {
-            cb.addEventListener('change', updateDeleteButton);
-        });
-
-        deleteSelectedBtn.addEventListener('click', function() {
-            const count = document.querySelectorAll('.log-checkbox:checked').length;
-            document.getElementById('logsCount').textContent = count;
-            deleteLogsModal.show();
-        });
-
-        selectAllBtn.addEventListener('click', function() {
-            selectAllCheckbox.checked = !selectAllCheckbox.checked;
-            logCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-            updateDeleteButton();
-        });
-
-        document.getElementById('confirmDeleteLogsBtn').addEventListener('click', function() {
-            const selectedIds = Array.from(document.querySelectorAll('.log-checkbox:checked'))
-                .map(cb => cb.dataset.logId);
-            
-            if (selectedIds.length > 0) {
-                // Create and submit a form to delete logs
+        function deleteLog(logId) {
+            if (confirm('Are you sure you want to delete this log entry? This action cannot be undone.')) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("admin.logs.delete-selected") }}';
-                
+                form.action = '/admin/logs/' + logId;
+
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
                 form.innerHTML = `
                     <input type="hidden" name="_token" value="${csrfToken}">
                     <input type="hidden" name="_method" value="DELETE">
-                    ${selectedIds.map(id => `<input type="hidden" name="ids[]" value="${id}">`).join('')}
                 `;
-                
+
                 document.body.appendChild(form);
                 form.submit();
             }
-        });
+        }
     </script>
 </x-app-layout>

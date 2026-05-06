@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\StaffReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AdminStaffReportController extends Controller
 {
@@ -44,6 +45,15 @@ class AdminStaffReportController extends Controller
 
         return redirect()->route('admin.staff-reports.index')
             ->with('success', 'Selected reports deleted successfully!');
+    }
+
+    public function destroy(StaffReport $staffReport)
+    {
+        $description = Str::limit($staffReport->description, 50);
+        $staffReport->delete();
+
+        return redirect()->route('admin.staff-reports.index')
+            ->with('success', "Staff report deleted successfully!");
     }
 }
 

@@ -65,4 +65,33 @@ class StaffTaskController extends Controller
         return redirect()->back()
             ->with('success', 'Task status updated!');
     }
+
+    public function destroy(Task $task)
+    {
+        $staffId = Auth::user()->staff_id;
+        $isAssigned = $task->staff()->where('staff.id', $staffId)->exists();
+
+        if (!$isAssigned) {
+            return redirect()->back()->with('error', 'Unauthorized action!');
+        }
+
+        if ($task->status !== 'completed') {
+            return redirect()->back()->with('error', 'Only completed tasks can be deleted.');
+        }
+
+        $taskName = $task->task_name;
+        $task->staff()->detach();
+        $task->delete();
+
+        \App\Models\ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'role'         => 'staff',
+            'action'       => 'Completed Task Deleted',
+            'description'  => "Staff " . Auth::user()->name . " deleted completed task \"{$taskName}\".",
+            'subject_type' => 'Task',
+            'subject_id'   => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Completed task removed successfully.');
+    }
 }

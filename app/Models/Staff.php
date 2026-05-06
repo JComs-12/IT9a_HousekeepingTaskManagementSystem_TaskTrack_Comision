@@ -8,9 +8,18 @@ class Staff extends Model
 {
     protected $fillable = [
         'name',
+        'first_name',
+        'last_name',
         'email',
         'phone',
+        'address',
+        'birthdate',
+        'age',
         'status',
+    ];
+
+    protected $casts = [
+        'birthdate' => 'date',
     ];
 
     public function tasks()

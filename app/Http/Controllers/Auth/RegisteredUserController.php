@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -31,26 +32,41 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'max:30'],
+            'address' => ['required', 'string', 'max:255'],
+            'birthdate' => ['required', 'date', 'before:today'],
+            'age' => ['required', 'integer', 'min:16', 'max:120'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $fullName = trim($request->first_name.' '.$request->last_name);
+
+        $staff = Staff::create([
+            'name' => $fullName,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'birthdate' => $request->birthdate,
+            'age' => $request->age,
+            'status' => 'active',
+        ]);
+
         $user = User::create([
-            'name' => $request->name,
+            'name' => $fullName,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
+            'role' => 'staff',
+            'staff_id' => $staff->id,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
-
-        // Redirect based on role
-        if ($user->role === 'admin') {
-            return redirect()->route('dashboard');
-        }
 
         return redirect()->route('staff.dashboard');
     }

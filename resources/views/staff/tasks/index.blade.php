@@ -237,7 +237,12 @@
                                             <span class="badge bg-success">Completed</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Done</span>
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                    data-task-id="{{ $task->id }}"
+                                                    data-task-name="{{ $task->task_name }}"
+                                                    onclick="confirmDeleteTask(this)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                         </td>
                                     </tr>
                                     @empty
@@ -251,6 +256,45 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @foreach($completedTasks as $task)
+        <form id="delete-task-form-{{ $task->id }}"
+              action="{{ route('staff.tasks.destroy', $task->id) }}"
+              method="POST" class="d-none">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endforeach
+
+    <!-- Delete Completed Task Modal -->
+    <div class="modal fade" id="deleteTaskModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" style="background-color:#16213e; border:1px solid #0f3460;">
+                <div class="modal-header" style="border-bottom:1px solid #0f3460;">
+                    <h6 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2" style="color:#e94560;"></i>
+                        Confirm Delete
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color:#aaaaaa; font-size:0.9rem; margin-bottom:0;">
+                        Are you sure you want to remove the completed task
+                        <strong id="deleteTaskName" style="color:#ffffff;"></strong>?
+                        This will clear it from your completed tasks list.
+                    </p>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #0f3460;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteTaskBtn">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
                 </div>
             </div>
         </div>
@@ -345,6 +389,24 @@
                 setTimeout(() => {
                     form.submit();
                 }, 300);
+            }
+        });
+
+        // Delete completed task handlers
+        let pendingDeleteTaskId = null;
+
+        function confirmDeleteTask(button) {
+            pendingDeleteTaskId = button.dataset.taskId;
+            document.getElementById('deleteTaskName').textContent = button.dataset.taskName || 'this task';
+            new bootstrap.Modal(document.getElementById('deleteTaskModal')).show();
+        }
+
+        document.getElementById('confirmDeleteTaskBtn').addEventListener('click', function() {
+            if (pendingDeleteTaskId) {
+                const form = document.getElementById('delete-task-form-' + pendingDeleteTaskId);
+                if (form) {
+                    form.submit();
+                }
             }
         });
 

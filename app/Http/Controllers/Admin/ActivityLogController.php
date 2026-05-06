@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ActivityLogController extends Controller
 {
@@ -24,5 +25,14 @@ class ActivityLogController extends Controller
 
         return redirect()->route('admin.logs.index')
             ->with('success', 'Selected logs deleted successfully!');
+    }
+
+    public function destroy(ActivityLog $log)
+    {
+        $description = Str::limit($log->description, 50);
+        $log->delete();
+
+        return redirect()->route('admin.logs.index')
+            ->with('success', "Log entry deleted successfully!");
     }
 }

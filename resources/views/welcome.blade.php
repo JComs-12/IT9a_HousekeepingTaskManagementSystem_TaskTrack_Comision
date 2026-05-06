@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TaskTrack | Housekeeping Management System</title>
+    <title>TaskTrack | Staff Task Tracking System</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -398,8 +398,8 @@
         <div class="container-fluid px-4 px-lg-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-                    <h1 class="text-gradient animate-fade-in-up">Elevate Your<br><span class="text-gradient-primary">Housekeeping Management</span></h1>
-                    <p class="animate-fade-in-up delay-100">TaskTrack streamlines your hotel operations, offering real-time room tracking, staff assignment, and seamless task lifecycles to ensure impeccable service and guest satisfaction.</p>
+                    <h1 class="text-gradient animate-fade-in-up">Welcome to<br><span class="text-gradient-primary">TaskTrack</span></h1>
+                    <p class="animate-fade-in-up delay-100">TaskTrack empowers staff and managers with fast task assignment, real-time status updates, and smooth communication so every team member can deliver better service with less friction.</p>
                     <div class="d-flex justify-content-center gap-3 mt-4 animate-fade-in-up delay-200">
                         @auth
                             @if(auth()->user()->role === 'admin')
@@ -410,7 +410,7 @@
                         @else
                             <a href="{{ route('login') }}" class="btn btn-primary-custom btn-custom px-5 py-3 fs-5">Get Started <i class="fas fa-arrow-right ms-2"></i></a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="btn btn-outline-custom btn-custom px-5 py-3 fs-5">Create Admin Account</a>
+                                <a href="{{ route('register') }}" class="btn btn-outline-custom btn-custom px-5 py-3 fs-5">Create Account</a>
                             @endif
                         @endauth
                     </div>
@@ -426,10 +426,10 @@
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem;">About <span style="color:var(--primary-color)">TaskTrack</span></h2>
                     <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-                        TaskTrack was born out of a simple need: to bring modern efficiency and complete transparency to the hospitality and housekeeping industry. 
+                        TaskTrack was built for frontline staff and supervisors who need a faster, clearer way to manage daily tasks and room readiness.
                     </p>
                     <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.6;">
-                        Our mission is to eliminate the chaos of paper checklists and endless radio chatter. By combining intuitive design with powerful real-time tracking, we empower your housekeeping staff to work smarter, not harder, while giving administrators total visibility into the operational lifecycle of every single room.
+                        From task assignment to incident reporting, TaskTrack helps teams stay aligned, keeps communication simple, and gives managers the visibility they need without slowing anyone down.
                     </p>
                 </div>
                 <div class="col-lg-6 text-center">
