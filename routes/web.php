@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\AdminStaffReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffTaskController;
 use App\Http\Controllers\Staff\StaffReportController;
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('landing');
+
+// ===== NOTIFICATION ROUTES =====
+Route::middleware(['auth'])->group(function () {
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+});
 
 // ===== ADMIN ROUTES =====
 Route::middleware(['auth', 'admin'])->group(function () {

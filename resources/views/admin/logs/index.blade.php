@@ -31,12 +31,17 @@
                     </thead>
                     <tbody>
                         @forelse($logs as $log)
-                            <tr data-log-id="{{ $log->id }}">
+                            <tr data-log-id="{{ $log->id }}" @if($log->is_important) style="background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107;" @endif>
                                 <td>
                                     <input type="checkbox" class="form-check-input log-checkbox" data-log-id="{{ $log->id }}" style="cursor: pointer;">
                                 </td>
                                 <td>
-                                    <div style="font-size: 0.9rem;">{{ $log->created_at->format('M d, Y') }}</div>
+                                    <div style="font-size: 0.9rem;">
+                                        @if($log->is_important)
+                                            <i class="fas fa-star" style="color: #ffc107; margin-right: 5px;" title="Important Action"></i>
+                                        @endif
+                                        {{ $log->created_at->format('M d, Y') }}
+                                    </div>
                                     <div class="text-muted" style="font-size: 0.8rem;">{{ $log->created_at->format('h:i A') }}</div>
                                 </td>
                                 <td>
@@ -54,7 +59,15 @@
                                         <span class="badge bg-secondary">Staff</span>
                                     @endif
                                 </td>
-                                <td><span class="badge bg-info text-dark">{{ $log->action }}</span></td>
+                                <td>
+                                    @if($log->is_important)
+                                        <span class="badge bg-warning text-dark" title="Important Action">
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ $log->action }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-info text-dark">{{ $log->action }}</span>
+                                    @endif
+                                </td>
                                 <td>{{ $log->description }}</td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger"

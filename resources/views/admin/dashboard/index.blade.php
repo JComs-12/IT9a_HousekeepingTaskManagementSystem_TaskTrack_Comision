@@ -135,8 +135,13 @@
                             </thead>
                             <tbody>
                                 @forelse($recentLogs as $log)
-                                    <tr>
-                                        <td>{{ $log->created_at->diffForHumans() }}</td>
+                                    <tr @if($log->is_important) style="background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107;" @endif>
+                                        <td>
+                                            @if($log->is_important)
+                                                <i class="fas fa-star" style="color: #ffc107; margin-right: 5px;" title="Important Action"></i>
+                                            @endif
+                                            {{ $log->created_at->diffForHumans() }}
+                                        </td>
                                         <td>
                                             @if($log->user)
                                                 <span class="badge bg-{{ $log->role === 'admin' ? 'primary' : 'secondary' }}">
@@ -146,7 +151,15 @@
                                                 <span class="badge bg-dark">System/Deleted</span>
                                             @endif
                                         </td>
-                                        <td><span class="badge bg-info text-dark">{{ $log->action }}</span></td>
+                                        <td>
+                                            @if($log->is_important)
+                                                <span class="badge bg-warning text-dark" title="Important Action">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $log->action }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-info text-dark">{{ $log->action }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $log->description }}</td>
                                     </tr>
                                 @empty

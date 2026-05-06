@@ -67,11 +67,24 @@
             100% { transform: scale(1.1); opacity: 1; }
         }
 
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-y: auto;
+        }
+
         .register-container {
             width: 100%;
             max-width: 500px;
+            max-height: calc(100vh - 60px);
             padding: 20px;
             z-index: 1;
+            overflow-y: auto;
         }
         .register-card {
             background: var(--card-bg);

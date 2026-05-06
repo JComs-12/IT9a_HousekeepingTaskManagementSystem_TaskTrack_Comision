@@ -9,6 +9,32 @@
             </div>
         </div>
 
+        <div class="mb-4" style="position:sticky;top:80px;z-index:1000;">
+            @if(session('success'))
+                <div class="alert alert-success" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>There was a problem updating your password.</strong>
+                    <ul class="mb-0 mt-2 ps-3">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </div>
+
         <div class="row g-4">
             <!-- Avatar Card -->
             <div class="col-md-4">
@@ -120,13 +146,17 @@
                                 </label>
                                 <div class="input-group">
                                     <input type="password" name="current_password" id="currentPassword"
-                                           class="form-control" placeholder="Enter current password">
+                                           class="form-control @error('current_password') is-invalid @enderror"
+                                           placeholder="Enter current password">
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="togglePassword('currentPassword', this)"
                                             style="border-color:#1a4a8a;background-color:#0f3460;color:#aaaaaa;">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                @error('current_password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- New Password with toggle -->
@@ -136,13 +166,17 @@
                                 </label>
                                 <div class="input-group">
                                     <input type="password" name="password" id="newPassword"
-                                           class="form-control" placeholder="Enter new password">
+                                           class="form-control @error('password') is-invalid @enderror"
+                                           placeholder="Enter new password">
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="togglePassword('newPassword', this)"
                                             style="border-color:#1a4a8a;background-color:#0f3460;color:#aaaaaa;">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Confirm Password with toggle -->
@@ -152,13 +186,17 @@
                                 </label>
                                 <div class="input-group">
                                     <input type="password" name="password_confirmation" id="confirmPassword"
-                                           class="form-control" placeholder="Confirm new password">
+                                           class="form-control @error('password_confirmation') is-invalid @enderror"
+                                           placeholder="Confirm new password">
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="togglePassword('confirmPassword', this)"
                                             style="border-color:#1a4a8a;background-color:#0f3460;color:#aaaaaa;">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                @error('password_confirmation')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <button type="submit" class="btn btn-primary">

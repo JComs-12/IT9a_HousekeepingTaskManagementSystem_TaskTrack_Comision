@@ -17,7 +17,9 @@ class User extends Authenticatable
         'password',
         'role',
         'staff_id',
-        'avatar',          // ← NEW: profile picture
+        'avatar',
+        'deleted_at',
+        'deletion_reason',
     ];
 
     protected $hidden = [
@@ -27,6 +29,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'deleted_at' => 'datetime',
         'password' => 'hashed',
     ];
 }

@@ -141,19 +141,15 @@
     </div>
 </div>
 
-<!-- Hidden delete forms (one per staff) -->
-@foreach($staff as $member)
-<form id="delete-form-{{ $member->id }}"
-      action="{{ route('admin.staff.destroy', ['staff' => $member->id]) }}"
-      method="POST" class="d-none">
+<form id="deleteStaffForm" method="POST" class="d-none">
     @csrf
     @method('DELETE')
+    <input type="hidden" name="deletion_reason" id="deleteReason">
 </form>
-@endforeach
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color:#16213e; border:1px solid #0f3460;">
             <div class="modal-header" style="border-bottom:1px solid #0f3460;">
                 <h6 class="modal-title">
@@ -163,17 +159,33 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p style="color:#aaaaaa; font-size:0.9rem; margin-bottom:0;">
-                    Are you sure you want to delete <strong id="deleteItemName" style="color:#ffffff;"></strong>?
-                    This cannot be undone.
+                <p style="color:#ffffff; font-size:0.95rem; margin-bottom:1rem; font-weight:600;">
+                    Deleting this staff account will revoke access and remove them from the active staff list.
                 </p>
+                <p style="color:#aaaaaa; font-size:0.9rem; margin-bottom:1rem;">
+                    Please confirm the legal reason for deleting <strong id="deleteItemName" style="color:#ffffff;"></strong>.
+                </p>
+                <div class="mb-3">
+                    <label class="form-label fw-bold" style="color:#ffffff;">Reason for deletion</label>
+                    <select id="deleteReasonSelect" class="form-select" aria-label="Deletion reason">
+                        <option value="">Select a reason</option>
+                        <option value="Retirement">Retirement</option>
+                        <option value="Terminated">Terminated</option>
+                        <option value="Resignation">Resignation</option>
+                        <option value="End of Contract">End of Contract</option>
+                        <option value="Death of the Person">Death of the Person</option>
+                    </select>
+                </div>
+                <div class="alert alert-warning" style="background: rgba(255, 193, 7, 0.12); border-color: rgba(255, 193, 7, 0.25); color: #f0ad4e;">
+                    <i class="fas fa-exclamation-circle me-2"></i>This action is permanent for the staff account login. Deleted accounts cannot be used again.
+                </div>
             </div>
             <div class="modal-footer" style="border-top:1px solid #0f3460;">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
                     <i class="fas fa-times me-1"></i>Cancel
                 </button>
-                <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">
-                    <i class="fas fa-trash me-1"></i>Yes, Delete
+                <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn" disabled>
+                    <i class="fas fa-trash me-1"></i>Delete Account
                 </button>
             </div>
         </div>
@@ -186,16 +198,25 @@
     function confirmDelete(button) {
         pendingDeleteId = button.dataset.memberId;
         document.getElementById('deleteItemName').textContent = button.dataset.memberName || 'this staff member';
+        document.getElementById('deleteReasonSelect').value = '';
+        document.getElementById('confirmDeleteBtn').disabled = true;
         new bootstrap.Modal(document.getElementById('deleteModal')).show();
     }
 
+    document.getElementById('deleteReasonSelect').addEventListener('change', function () {
+        document.getElementById('confirmDeleteBtn').disabled = !this.value;
+    });
+
     document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-        if (pendingDeleteId) {
-            const form = document.getElementById('delete-form-' + pendingDeleteId);
-            if (form) {
-                form.submit();
-            }
+        const reason = document.getElementById('deleteReasonSelect').value;
+        if (!pendingDeleteId || !reason) {
+            return;
         }
+
+        const form = document.getElementById('deleteStaffForm');
+        form.action = '/admin/staff/' + pendingDeleteId;
+        document.getElementById('deleteReason').value = reason;
+        form.submit();
     });
 </script>
 </x-app-layout>

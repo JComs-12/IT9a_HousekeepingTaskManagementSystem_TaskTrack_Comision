@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
+use App\Models\ActivityLog;
 use App\Models\Staff;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\ImportantActionNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -73,15 +76,45 @@ class StaffController extends Controller
             ->with('success', 'Staff added successfully!');
     }
 
-    public function destroy(Staff $staff)
+    public function destroy(Request $request, Staff $staff)
     {
-        DB::transaction(function () use ($staff) {
-            User::where('staff_id', $staff->id)->delete();
+        $request->validate([
+            'deletion_reason' => ['required', 'in:Retirement,Terminated,Resignation,End of Contract,Death of the Person'],
+        ]);
+
+        DB::transaction(function () use ($staff, $request) {
+            User::where('staff_id', $staff->id)
+                ->update([
+                    'deleted_at' => now(),
+                    'deletion_reason' => $request->deletion_reason,
+                ]);
+
             $staff->delete();
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'role' => Auth::user()->role,
+                'action' => 'Deleted Staff Account',
+                'description' => "Deleted staff member '{$staff->name}' (Email: {$staff->email}) with reason: {$request->deletion_reason}",
+                'is_important' => true,
+                'subject_type' => 'Staff',
+                'subject_id' => $staff->id,
+            ]);
+
+            // Notify all admins about the staff deletion
+            $admins = User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new ImportantActionNotification(
+                    'Deleted Staff Account',
+                    "Staff member '{$staff->name}' has been deleted. Reason: {$request->deletion_reason}",
+                    Auth::user()->name,
+                    'admin'
+                ));
+            }
         });
 
         return redirect()->route('admin.staff.index')
-            ->with('success', 'Staff deleted successfully!');
+            ->with('success', 'Staff account deleted successfully.');
     }
 
     public function show(Staff $staff)

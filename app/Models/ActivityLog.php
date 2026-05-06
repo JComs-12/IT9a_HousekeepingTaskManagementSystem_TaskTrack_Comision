@@ -11,6 +11,7 @@ class ActivityLog extends Model
         'role',
         'action',
         'description',
+        'is_important',
         'subject_type',
         'subject_id',
     ];
