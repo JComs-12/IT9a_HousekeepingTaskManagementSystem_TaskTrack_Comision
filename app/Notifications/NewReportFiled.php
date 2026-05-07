@@ -53,9 +53,12 @@ class NewReportFiled extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'action' => 'New Report Filed',
             'report_id' => $this->report->id ?? null,
             'message' => 'A new staff report was filed.',
-            'url' => route('admin.staff-reports.index')
+            'url' => route('admin.staff-reports.index', ['highlight_report' => $this->report->id]),
+            'icon' => 'fa-flag',
+            'color' => 'ffc107',
         ];
     }
 }

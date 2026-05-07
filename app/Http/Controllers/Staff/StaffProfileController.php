@@ -18,15 +18,36 @@ class StaffProfileController extends Controller
 
     public function update(Request $request)
     {
+        $user = Auth::user();
+        $staff = $user->staff;
+
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'phone'      => 'required|string|max:30',
+            'address'    => 'required|string|max:255',
+            'birthdate'  => 'required|date|before:today',
+            'age'        => 'required|integer|min:16|max:120',
         ]);
 
-        Auth::user()->update([
+        $user->update([
             'name'  => $request->name,
             'email' => $request->email,
         ]);
+
+        if ($staff) {
+            $staff->update([
+                'name'       => trim($request->first_name . ' ' . $request->last_name),
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'phone'      => $request->phone,
+                'address'    => $request->address,
+                'birthdate'  => $request->birthdate,
+                'age'        => $request->age,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }

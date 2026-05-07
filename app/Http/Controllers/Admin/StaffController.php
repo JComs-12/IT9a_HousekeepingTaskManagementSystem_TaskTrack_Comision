@@ -108,7 +108,8 @@ class StaffController extends Controller
                     'Deleted Staff Account',
                     "Staff member '{$staff->name}' has been deleted. Reason: {$request->deletion_reason}",
                     Auth::user()->name,
-                    'admin'
+                    'admin',
+                    route('admin.staff.index')
                 ));
             }
         });

@@ -338,6 +338,10 @@
                class="sidebar-link {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i> Staff
             </a>
+            <a href="{{ route('admin.admins.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                <i class="fas fa-user-shield"></i> Admins
+            </a>
             <a href="{{ route('admin.tasks.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
                 <i class="fas fa-tasks"></i> Manage Tasks
@@ -409,41 +413,39 @@
                 <span class="top-bar-title">@yield('page-title', 'Dashboard')</span>
             </div>
             <div class="top-bar-right d-flex align-items-center gap-3">
-                @if(Auth::user()->role === 'admin')
-                    <!-- Notification Bell for Admins -->
-                    <div class="dropdown" style="position: relative;">
-                        <button class="btn btn-sm btn-transparent" type="button" data-bs-toggle="dropdown" style="color:#e94560;position:relative;border:none;background:transparent;">
-                            <i class="fas fa-bell" style="font-size:1.2rem;"></i>
-                            @if(Auth::user()->unreadNotifications->count() > 0)
-                                <span style="position:absolute;top:-5px;right:-5px;background:#e94560;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;">
-                                    {{ Auth::user()->unreadNotifications->count() }}
-                                </span>
-                            @endif
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" style="max-width:400px;max-height:400px;overflow-y:auto;">
-                            @if(Auth::user()->unreadNotifications->count() > 0)
-                                @foreach(Auth::user()->unreadNotifications as $notification)
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:void(0)" onclick="markAsRead('{{ $notification->id }}')">
-                                            <div style="display:flex;align-items:start;gap:10px;">
-                                                <i class="fas {{ $notification->data['icon'] ?? 'fa-bell' }}" style="color:#{{ $notification->data['color'] ?? 'ffc107' }};margin-top:3px;"></i>
-                                                <div style="flex:1;">
-                                                    <div style="font-weight:600;color:#ffffff;">{{ $notification->data['action'] ?? 'Action' }}</div>
-                                                    <div style="font-size:0.85rem;color:#aaaaaa;">{{ $notification->data['description'] ?? '' }}</div>
-                                                    <div style="font-size:0.75rem;color:#666666;margin-top:5px;">{{ $notification->created_at->diffForHumans() }}</div>
-                                                </div>
+                <!-- Notification Bell -->
+                <div class="dropdown" style="position: relative;">
+                    <button class="btn btn-sm btn-transparent" type="button" data-bs-toggle="dropdown" style="color:#e94560;position:relative;border:none;background:transparent;">
+                        <i class="fas fa-bell" style="font-size:1.2rem;"></i>
+                        @if(Auth::user()->unreadNotifications->count() > 0)
+                            <span style="position:absolute;top:-5px;right:-5px;background:#e94560;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;">
+                                {{ Auth::user()->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="max-width:420px;max-height:420px;overflow-y:auto;">
+                        @if(Auth::user()->unreadNotifications->count() > 0)
+                            @foreach(Auth::user()->unreadNotifications as $notification)
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="markAsReadAndGoto('{{ $notification->id }}', '{{ $notification->data['url'] ?? url('/') }}')">
+                                        <div style="display:flex;align-items:start;gap:10px;">
+                                            <i class="fas {{ $notification->data['icon'] ?? 'fa-bell' }}" style="color:#{{ $notification->data['color'] ?? 'ffc107' }};margin-top:3px;"></i>
+                                            <div style="flex:1;">
+                                                <div style="font-weight:600;color:#ffffff;">{{ $notification->data['action'] ?? 'Action' }}</div>
+                                                <div style="font-size:0.85rem;color:#aaaaaa;">{{ $notification->data['message'] ?? $notification->data['description'] ?? '' }}</div>
+                                                <div style="font-size:0.75rem;color:#666666;margin-top:5px;">{{ $notification->created_at->diffForHumans() }}</div>
                                             </div>
-                                        </a>
-                                    </li>
-                                @endforeach
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-center" href="{{ route('admin.logs.index') }}" style="font-size:0.9rem;color:#e94560;">View All Activity</a></li>
-                            @else
-                                <li><a class="dropdown-item text-center text-muted" href="javascript:void(0)">No new notifications</a></li>
-                            @endif
-                        </ul>
-                    </div>
-                @endif
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-center" href="{{ route('admin.logs.index') }}" style="font-size:0.9rem;color:#e94560;">View All Activity</a></li>
+                        @else
+                            <li><a class="dropdown-item text-center text-muted" href="javascript:void(0)">No new notifications</a></li>
+                        @endif
+                    </ul>
+                </div>
                 <span style="color:#aaaaaa;font-size:0.85rem;">
                     <i class="fas fa-clock me-1" style="color:#e94560;"></i>
                     {{ now()->format('D, M d Y') }}
@@ -515,6 +517,20 @@
             }).then(response => {
                 if (response.ok) {
                     location.reload();
+                }
+            });
+        }
+
+        function markAsReadAndGoto(notificationId, url) {
+            fetch(`/notifications/${notificationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = url;
                 }
             });
         }

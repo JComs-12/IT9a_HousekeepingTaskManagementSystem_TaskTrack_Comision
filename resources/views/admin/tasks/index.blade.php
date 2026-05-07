@@ -1,4 +1,7 @@
 <x-app-layout>
+    @php
+        $highlightTaskId = request('highlight_task');
+    @endphp
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-12 d-flex justify-content-between align-items-center">
@@ -54,7 +57,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($activeTasks as $task)
-                                    <tr>
+                                    <tr @if($highlightTaskId && $task->id == $highlightTaskId) style="background-color: rgba(255, 193, 7, 0.15); border-left: 4px solid #ffc107;" @endif>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             @php $taskNames = explode(', ', $task->task_name); @endphp
@@ -157,7 +160,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($completedTasks as $task)
-                                    <tr>
+                                    <tr @if($highlightTaskId && $task->id == $highlightTaskId) style="background-color: rgba(255, 193, 7, 0.15); border-left: 4px solid #ffc107;" @endif>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             @php $taskNames = explode(', ', $task->task_name); @endphp
@@ -297,6 +300,21 @@
             }
         }
     });
+
+    // Remove highlight after notification click
+    setTimeout(function() {
+        const highlightedRows = document.querySelectorAll('tr[style*="rgba(255, 193, 7, 0.15)"]');
+        highlightedRows.forEach(row => {
+            row.style.backgroundColor = '';
+            row.style.borderLeft = '';
+        });
+        // Remove query parameter from URL
+        if (window.location.search.includes('highlight_task')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('highlight_task');
+            window.history.replaceState({}, '', url);
+        }
+    }, 3000); // Remove highlight after 3 seconds
 </script>
     </div>
 </x-app-layout>

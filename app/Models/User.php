@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Staff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,13 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'first_name',
+        'last_name',
         'email',
+        'phone',
+        'address',
+        'birthdate',
+        'age',
         'password',
         'role',
         'staff_id',
@@ -30,6 +37,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'birthdate' => 'date',
         'password' => 'hashed',
     ];
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
+    }
 }

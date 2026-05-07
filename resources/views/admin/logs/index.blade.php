@@ -205,5 +205,21 @@
                 form.submit();
             }
         }
+
+        // Remove notification-based highlights after click/interaction
+        setTimeout(function() {
+            const highlightedRows = document.querySelectorAll('tr[style*="rgba(255, 193, 7, 0.15)"]');
+            highlightedRows.forEach(row => {
+                row.style.backgroundColor = '';
+                row.style.borderLeft = '';
+            });
+            // Remove any highlight query parameters from URL
+            const url = new URL(window.location);
+            if (url.searchParams.has('highlight_task') || url.searchParams.has('highlight_report')) {
+                url.searchParams.delete('highlight_task');
+                url.searchParams.delete('highlight_report');
+                window.history.replaceState({}, '', url);
+            }
+        }, 3000); // Remove highlight after 3 seconds
     </script>
 </x-app-layout>

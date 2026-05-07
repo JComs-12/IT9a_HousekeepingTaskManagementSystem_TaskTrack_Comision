@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\StaffController;
@@ -44,6 +45,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('profile.destroy');
 
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('admins', AdminController::class)->except(['edit', 'update', 'show']);
         Route::resource('rooms', RoomController::class);
         Route::resource('staff', StaffController::class)->except(['edit', 'update']);
         Route::resource('tasks', TaskController::class);

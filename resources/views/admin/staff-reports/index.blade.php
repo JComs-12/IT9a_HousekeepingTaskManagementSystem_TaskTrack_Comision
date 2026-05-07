@@ -1,4 +1,7 @@
 <x-app-layout>
+    @php
+        $highlightReportId = request('highlight_report');
+    @endphp
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-12 d-flex justify-content-between align-items-center">
@@ -51,7 +54,7 @@
                         </thead>
                         <tbody>
                             @forelse($reports as $report)
-                                <tr data-report-id="{{ $report->id }}">
+                                <tr data-report-id="{{ $report->id }}" @if($highlightReportId && $report->id == $highlightReportId) style="background-color: rgba(255, 193, 7, 0.15); border-left: 4px solid #ffc107;" @endif>
                                     <td>
                                         <input type="checkbox" class="form-check-input report-checkbox" data-report-id="{{ $report->id }}" style="cursor: pointer;">
                                     </td>
@@ -222,5 +225,20 @@
                 form.submit();
             }
         }
+
+        // Remove highlight after notification click
+        setTimeout(function() {
+            const highlightedRows = document.querySelectorAll('tr[style*="rgba(255, 193, 7, 0.15)"]');
+            highlightedRows.forEach(row => {
+                row.style.backgroundColor = '';
+                row.style.borderLeft = '';
+            });
+            // Remove query parameter from URL
+            if (window.location.search.includes('highlight_report')) {
+                const url = new URL(window.location);
+                url.searchParams.delete('highlight_report');
+                window.history.replaceState({}, '', url);
+            }
+        }, 3000); // Remove highlight after 3 seconds
     </script>
 </x-app-layout>

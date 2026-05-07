@@ -15,13 +15,15 @@ class ImportantActionNotification extends Notification implements ShouldQueue
     protected $description;
     protected $performer;
     protected $performerRole;
+    protected $url;
 
-    public function __construct($action, $description, $performer, $performerRole = 'system')
+    public function __construct($action, $description, $performer, $performerRole = 'system', $url = null)
     {
         $this->action = $action;
         $this->description = $description;
         $this->performer = $performer;
         $this->performerRole = $performerRole;
+        $this->url = $url;
     }
 
     public function via(object $notifiable): array
@@ -38,6 +40,7 @@ class ImportantActionNotification extends Notification implements ShouldQueue
             'performer_role' => $this->performerRole,
             'icon' => $this->getIcon(),
             'color' => $this->getColor(),
+            'url' => $this->url,
         ];
     }
 

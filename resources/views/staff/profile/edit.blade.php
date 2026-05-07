@@ -1,4 +1,7 @@
 <x-staff-layout>
+    @php
+        $staff = Auth::user()->staff;
+    @endphp
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-12">
@@ -60,6 +63,16 @@
                         Housekeeping Staff
                     </span>
                     <hr style="border-color:#0f3460;">
+                    @if($staff)
+                        <div class="text-start mb-3">
+                            <p class="mb-2"><strong>First Name:</strong> {{ $staff->first_name }}</p>
+                            <p class="mb-2"><strong>Last Name:</strong> {{ $staff->last_name }}</p>
+                            <p class="mb-2"><strong>Phone:</strong> {{ $staff->phone }}</p>
+                            <p class="mb-2"><strong>Address:</strong> {{ $staff->address }}</p>
+                            <p class="mb-2"><strong>Birthdate:</strong> {{ optional($staff->birthdate)->format('M d, Y') }}</p>
+                            <p class="mb-0"><strong>Age:</strong> {{ $staff->age }}</p>
+                        </div>
+                    @endif
                     <p class="mb-3" style="color:#aaaaaa;font-size:0.85rem;">
                         <i class="fas fa-calendar me-2" style="color:#e94560;"></i>
                         Joined {{ Auth::user()->created_at->format('M d, Y') }}
@@ -98,28 +111,104 @@
                             @csrf
                             @method('PATCH')
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-user me-2" style="color:#e94560;"></i>Name
-                                </label>
-                                <input type="text" name="name"
-                                       class="form-control @error('name') is-invalid @enderror"
-                                       value="{{ old('name', Auth::user()->name) }}" required>
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-id-badge me-2" style="color:#e94560;"></i>First Name
+                                    </label>
+                                    <input type="text" name="first_name"
+                                           class="form-control @error('first_name') is-invalid @enderror"
+                                           value="{{ old('first_name', $staff?->first_name) }}" required>
+                                    @error('first_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-id-badge me-2" style="color:#e94560;"></i>Last Name
+                                    </label>
+                                    <input type="text" name="last_name"
+                                           class="form-control @error('last_name') is-invalid @enderror"
+                                           value="{{ old('last_name', $staff?->last_name) }}" required>
+                                    @error('last_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="fas fa-envelope me-2" style="color:#e94560;"></i>Email
-                                </label>
-                                <input type="email" name="email"
-                                       class="form-control @error('email') is-invalid @enderror"
-                                       value="{{ old('email', Auth::user()->email) }}" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-user me-2" style="color:#e94560;"></i>Display Name
+                                    </label>
+                                    <input type="text" name="name"
+                                           class="form-control @error('name') is-invalid @enderror"
+                                           value="{{ old('name', Auth::user()->name) }}" required>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-2" style="color:#e94560;"></i>Email
+                                    </label>
+                                    <input type="email" name="email"
+                                           class="form-control @error('email') is-invalid @enderror"
+                                           value="{{ old('email', Auth::user()->email) }}" required>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-phone me-2" style="color:#e94560;"></i>Phone
+                                    </label>
+                                    <input type="text" name="phone"
+                                           class="form-control @error('phone') is-invalid @enderror"
+                                           value="{{ old('phone', $staff?->phone) }}" required>
+                                    @error('phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-2" style="color:#e94560;"></i>Address
+                                    </label>
+                                    <input type="text" name="address"
+                                           class="form-control @error('address') is-invalid @enderror"
+                                           value="{{ old('address', $staff?->address) }}" required>
+                                    @error('address')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-calendar-alt me-2" style="color:#e94560;"></i>Birthdate
+                                    </label>
+                                    <input type="date" name="birthdate"
+                                           class="form-control @error('birthdate') is-invalid @enderror"
+                                           value="{{ old('birthdate', optional($staff?->birthdate)->format('Y-m-d')) }}" required>
+                                    @error('birthdate')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-users me-2" style="color:#e94560;"></i>Age
+                                    </label>
+                                    <input type="number" name="age"
+                                           class="form-control @error('age') is-invalid @enderror"
+                                           value="{{ old('age', $staff?->age) }}" min="16" max="120" required>
+                                    @error('age')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">

@@ -53,9 +53,12 @@ class NewTaskAssigned extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'action' => 'New Task Assigned',
             'task_id' => $this->task->id,
             'message' => 'You have been assigned a new task: ' . $this->task->name,
-            'url' => route('staff.tasks')
+            'url' => route('staff.tasks', ['highlight_task' => $this->task->id]),
+            'icon' => 'fa-tasks',
+            'color' => '0dcaf0',
         ];
     }
 }

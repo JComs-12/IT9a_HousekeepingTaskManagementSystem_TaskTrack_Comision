@@ -84,7 +84,8 @@ class RegisteredUserController extends Controller
                 'Staff Account Created',
                 "New staff member '{$fullName}' has registered.",
                 $fullName,
-                'staff'
+                'staff',
+                route('admin.staff.index')
             ));
         }
 

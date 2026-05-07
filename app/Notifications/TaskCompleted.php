@@ -53,9 +53,12 @@ class TaskCompleted extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'action' => 'Task Completed',
             'task_id' => $this->task->id,
             'message' => 'A task was completed: ' . $this->task->name,
-            'url' => route('admin.tasks.index')
+            'url' => route('admin.tasks.index', ['highlight_task' => $this->task->id]),
+            'icon' => 'fa-check-circle',
+            'color' => '198754',
         ];
     }
 }
