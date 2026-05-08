@@ -35,15 +35,16 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:255'],
-            'birthdate' => ['required', 'date', 'before:today'],
-            'age' => ['required', 'integer', 'min:16', 'max:120'],
-            'gender' => ['required', 'string', 'in:male,female,other,prefer_not_to_say'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'last_name'  => ['required', 'string', 'max:255'],
+            'email'      => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'      => ['required', 'string', 'max:30'],
+            'address'    => ['required', 'string', 'max:255'],
+            'birthdate'  => ['required', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
+            'gender'     => ['required', 'string', 'in:male,female,other,prefer_not_to_say'],
+            'password'   => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        $age = now()->diffInYears(\Carbon\Carbon::parse($request->birthdate));
 
         $fullName = trim($request->first_name.' '.$request->last_name);
 
@@ -55,7 +56,7 @@ class RegisteredUserController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'birthdate' => $request->birthdate,
-            'age' => $request->age,
+            'age'      => $age,
             'gender' => $request->gender,
             'status' => 'active',
         ]);
@@ -68,7 +69,7 @@ class RegisteredUserController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'birthdate' => $request->birthdate,
-            'age' => $request->age,
+            'age'      => $age,
             'gender' => $request->gender,
             'password' => Hash::make($request->password),
             'role' => 'staff',

@@ -322,22 +322,27 @@
                         </label>
                         <input type="date"
                                name="birthdate"
+                               id="regBirthdate"
                                class="form-control"
                                value="{{ old('birthdate') }}"
+                               max="{{ now()->subYears(18)->format('Y-m-d') }}"
+                               onchange="calcAge()"
                                required>
+                        <div id="regAgeError" style="color:#f87171; font-size:0.82rem; margin-top:4px; display:none;">
+                            <i class="fas fa-exclamation-circle me-1"></i>Must be at least 18 years old.
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">
                             <i class="fas fa-user-clock me-2" style="color: #e94560;"></i>Age
+                            <small style="opacity:0.5; font-size:0.72rem; margin-left:4px;">(auto-filled)</small>
                         </label>
                         <input type="number"
-                               name="age"
+                               id="regAgeDisplay"
                                class="form-control"
-                               placeholder="Enter your age"
-                               value="{{ old('age') }}"
-                               min="16"
-                               max="120"
-                               required>
+                               placeholder="Select birthdate first"
+                               disabled
+                               style="background:rgba(11,15,25,0.7); cursor:not-allowed; color:#e2e8f0; -webkit-text-fill-color:#e2e8f0; border-color:rgba(255,255,255,0.15);">
                     </div>
                 </div>
 
@@ -401,6 +406,31 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function calcAge() {
+            const bd  = document.getElementById('regBirthdate');
+            const out = document.getElementById('regAgeDisplay');
+            const err = document.getElementById('regAgeError');
+            if (!bd || !bd.value) return;
+
+            const dob   = new Date(bd.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+
+            out.value = age;
+
+            if (age < 18) {
+                err.style.display = 'block';
+                bd.setCustomValidity('Must be at least 18 years old.');
+            } else {
+                err.style.display = 'none';
+                bd.setCustomValidity('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', calcAge);
+
         function toggleRegisterPassword() {
             const input = document.getElementById('registerPassword');
             const icon  = document.getElementById('registerPasswordIcon');

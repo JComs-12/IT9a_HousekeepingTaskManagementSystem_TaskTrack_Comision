@@ -54,13 +54,14 @@ class StaffController extends Controller
             'password'   => 'required|confirmed|min:8',
             'phone'      => 'required|string|max:20',
             'address'    => 'required|string|max:255',
-            'birthdate'  => 'required|date|before:today',
-            'age'        => 'required|integer|min:16|max:120',
+            'birthdate'  => 'required|date|before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
             'gender'     => 'required|string|in:male,female,other,prefer_not_to_say',
             'status'     => 'required|in:active,inactive',
         ]);
 
-        DB::transaction(function () use ($request) {
+        $age = now()->diffInYears(\Carbon\Carbon::parse($request->birthdate));
+
+        DB::transaction(function () use ($request, $age) {
             $fullName = trim($request->first_name . ' ' . $request->last_name);
 
             $staff = Staff::create([
@@ -71,7 +72,7 @@ class StaffController extends Controller
                 'phone'      => $request->phone,
                 'address'    => $request->address,
                 'birthdate'  => $request->birthdate,
-                'age'        => $request->age,
+                'age'        => $age,
                 'gender'     => $request->gender,
                 'status'     => $request->status,
             ]);
@@ -84,7 +85,7 @@ class StaffController extends Controller
                 'phone'      => $request->phone,
                 'address'    => $request->address,
                 'birthdate'  => $request->birthdate,
-                'age'        => $request->age,
+                'age'        => $age,
                 'gender'     => $request->gender,
                 'password'   => Hash::make($request->password),
                 'role'       => 'staff',

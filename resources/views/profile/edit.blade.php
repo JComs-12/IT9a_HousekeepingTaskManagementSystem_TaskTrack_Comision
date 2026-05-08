@@ -239,9 +239,14 @@
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-calendar-alt me-2" style="color:#e94560;"></i>Birthdate
                                     </label>
-                                    <input type="date" name="birthdate"
+                                    <input type="date" name="birthdate" id="profileBirthdate"
                                            class="form-control @error('birthdate') is-invalid @enderror"
-                                           value="{{ old('birthdate', optional(Auth::user()->birthdate)->format('Y-m-d')) }}" required>
+                                           value="{{ old('birthdate', optional(Auth::user()->birthdate)->format('Y-m-d')) }}"
+                                           max="{{ now()->subYears(18)->format('Y-m-d') }}"
+                                           onchange="calcAge()" required>
+                                    <div id="profileAgeError" style="color:#f87171; font-size:0.82rem; margin-top:4px; display:none;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>Must be at least 18 years old.
+                                    </div>
                                     @error('birthdate')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -249,14 +254,13 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-users me-2" style="color:#e94560;"></i>Age
+                                        <small style="color:#475569; font-weight:400; font-size:0.72rem; margin-left:6px;">(auto-filled)</small>
                                     </label>
-                                    <input type="number" name="age"
-                                           class="form-control @error('age') is-invalid @enderror"
+                                    <input type="number" id="profileAgeDisplay"
+                                           class="form-control"
                                            value="{{ old('age', Auth::user()->age) }}"
-                                           min="16" max="120" required>
-                                    @error('age')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                           disabled
+                                           style="background:rgba(11,15,25,0.7); cursor:not-allowed; color:#e2e8f0; -webkit-text-fill-color:#e2e8f0; border-color:rgba(255,255,255,0.15);">
                                 </div>
                             </div>
 
@@ -392,6 +396,31 @@
     </div>
 
     <script>
+        function calcAge() {
+            const bd  = document.getElementById('profileBirthdate');
+            const out = document.getElementById('profileAgeDisplay');
+            const err = document.getElementById('profileAgeError');
+            if (!bd || !bd.value) return;
+
+            const dob   = new Date(bd.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+
+            out.value = age;
+
+            if (age < 18) {
+                err.style.display = 'block';
+                bd.setCustomValidity('Must be at least 18 years old.');
+            } else {
+                err.style.display = 'none';
+                bd.setCustomValidity('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', calcAge);
+
         function togglePassword(fieldId, btn) {
             const input = document.getElementById(fieldId);
             const icon = btn.querySelector('i');
