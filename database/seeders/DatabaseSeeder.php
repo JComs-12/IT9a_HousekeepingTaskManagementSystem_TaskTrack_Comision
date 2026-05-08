@@ -13,11 +13,14 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        User::create([
-            'name' => 'Test User',
-            'email' => 'test@email.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        // firstOrCreate prevents duplicate-key errors on repeat deploys
+        User::firstOrCreate(
+            ['email' => 'test@email.com'],          // search key
+            [
+                'name'     => 'Test User',
+                'password' => Hash::make('password'),
+                'role'     => 'admin',
+            ]
+        );
     }
 }
