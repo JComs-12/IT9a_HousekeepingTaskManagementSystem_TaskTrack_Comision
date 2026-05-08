@@ -13,14 +13,17 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // firstOrCreate prevents duplicate-key errors on repeat deploys
+        // ── Admin user (no-op if already exists) ──────────
         User::firstOrCreate(
-            ['email' => 'test@email.com'],          // search key
+            ['email' => 'test@email.com'],
             [
                 'name'     => 'Test User',
                 'password' => Hash::make('password'),
                 'role'     => 'admin',
             ]
         );
+
+        // ── Rooms 101–110 (no-op if rooms already exist) ──
+        $this->call(RoomSeeder::class);
     }
 }
