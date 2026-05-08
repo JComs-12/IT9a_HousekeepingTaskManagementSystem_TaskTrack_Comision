@@ -293,6 +293,20 @@
         }
         .modal-header, .modal-footer { border-color: var(--card-border); }
 
+        /* ===== NOTIFICATION DROPDOWN ===== */
+        .notif-dropdown { background:#131929; border:1px solid var(--card-border); border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.5); padding:8px 0; min-width:340px; max-width:420px; }
+        .notif-dropdown .notif-header { padding:10px 16px 8px; border-bottom:1px solid var(--card-border); font-size:0.8rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); }
+        .notif-dropdown .dropdown-item { padding:12px 16px; background:transparent; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s; }
+        .notif-dropdown .dropdown-item:last-child { border-bottom:none; }
+        .notif-dropdown .dropdown-item:hover, .notif-dropdown .dropdown-item:focus { background:rgba(233,69,96,0.08); }
+        .notif-dropdown .notif-title { font-weight:600; font-size:0.9rem; color:#f1f5f9; }
+        .notif-dropdown .notif-msg   { font-size:0.82rem; color:#94a3b8; margin-top:2px; line-height:1.4; }
+        .notif-dropdown .notif-time  { font-size:0.72rem; color:#475569; margin-top:5px; }
+        .notif-dropdown .notif-footer { padding:10px 16px; border-top:1px solid var(--card-border); text-align:center; }
+        .notif-dropdown .notif-footer a { font-size:0.83rem; color:var(--primary-color); text-decoration:none; font-weight:600; }
+        .notif-dropdown .notif-footer a:hover { text-decoration:underline; }
+        .notif-dropdown .notif-empty { padding:24px 16px; text-align:center; color:#475569; font-size:0.9rem; }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-260px); }
@@ -423,26 +437,39 @@
                             </span>
                         @endif
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" style="max-width:420px;max-height:420px;overflow-y:auto;">
+                    <ul class="dropdown-menu dropdown-menu-end notif-dropdown" style="max-height:480px;overflow-y:auto;">
+                        <div class="notif-header">
+                            <i class="fas fa-bell me-2" style="color:var(--primary-color);"></i>Notifications
+                        </div>
                         @if(Auth::user()->unreadNotifications->count() > 0)
                             @foreach(Auth::user()->unreadNotifications as $notification)
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0)" onclick="markAsReadAndGoto('{{ $notification->id }}', '{{ $notification->data['url'] ?? url('/') }}')">
-                                        <div style="display:flex;align-items:start;gap:10px;">
-                                            <i class="fas {{ $notification->data['icon'] ?? 'fa-bell' }}" style="color:#{{ $notification->data['color'] ?? 'ffc107' }};margin-top:3px;"></i>
-                                            <div style="flex:1;">
-                                                <div style="font-weight:600;color:#ffffff;">{{ $notification->data['action'] ?? 'Action' }}</div>
-                                                <div style="font-size:0.85rem;color:#aaaaaa;">{{ $notification->data['message'] ?? $notification->data['description'] ?? '' }}</div>
-                                                <div style="font-size:0.75rem;color:#666666;margin-top:5px;">{{ $notification->created_at->diffForHumans() }}</div>
+                                        <div style="display:flex;align-items:flex-start;gap:12px;">
+                                            <div style="width:32px;height:32px;border-radius:50%;background:rgba(233,69,96,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+                                                <i class="fas {{ $notification->data['icon'] ?? 'fa-bell' }}" style="color:#{{ $notification->data['color'] ?? 'e94560' }};font-size:0.8rem;"></i>
+                                            </div>
+                                            <div style="flex:1;min-width:0;">
+                                                <div class="notif-title">{{ $notification->data['action'] ?? 'Notification' }}</div>
+                                                <div class="notif-msg">{{ $notification->data['message'] ?? $notification->data['description'] ?? '' }}</div>
+                                                <div class="notif-time"><i class="fas fa-clock me-1"></i>{{ $notification->created_at->diffForHumans() }}</div>
                                             </div>
                                         </div>
                                     </a>
                                 </li>
                             @endforeach
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-center" href="{{ route('admin.logs.index') }}" style="font-size:0.9rem;color:#e94560;">View All Activity</a></li>
+                            <li>
+                                <div class="notif-footer">
+                                    <a href="{{ route('admin.logs.index') }}"><i class="fas fa-list me-1"></i>View All Activity</a>
+                                </div>
+                            </li>
                         @else
-                            <li><a class="dropdown-item text-center text-muted" href="javascript:void(0)">No new notifications</a></li>
+                            <li>
+                                <div class="notif-empty">
+                                    <i class="fas fa-bell-slash d-block mb-2" style="font-size:1.5rem;color:#334155;"></i>
+                                    No new notifications
+                                </div>
+                            </li>
                         @endif
                     </ul>
                 </div>

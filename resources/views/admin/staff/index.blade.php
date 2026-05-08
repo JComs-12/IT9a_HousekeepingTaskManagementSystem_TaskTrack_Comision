@@ -1,24 +1,23 @@
 <x-app-layout>
 <style>
-    /* Hover effect on table rows */
-    .table tbody tr { transition: background-color 0.2s, transform 0.1s; }
+    .table tbody tr { transition: background-color 0.2s; }
     .table tbody tr:hover td { background-color: #1e2d50 !important; cursor: default; }
-
-    /* Filter buttons */
     .filter-btn { transition: all 0.2s; border-radius: 20px; padding: 5px 16px; font-size: 0.82rem; font-weight: 600; }
     .filter-btn.active-filter { background-color: #e94560 !important; border-color: #e94560 !important; color: #fff !important; }
-
-    /* Search input */
     .search-wrapper { position: relative; }
     .search-wrapper .fas { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaaaaa; }
     .search-wrapper input { padding-left: 36px; }
-
-    /* Action buttons hover */
-    .btn-warning:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,193,7,0.4); }
-    .btn-danger:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,53,69,0.4); }
-    .btn-info:hover    { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,202,240,0.4); }
-    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-action { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:all 0.22s; letter-spacing:0.3px; }
+    .btn-action-view   { background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; }
+    .btn-action-view:hover   { transform:translateY(-2px); box-shadow:0 6px 18px rgba(59,130,246,0.45); color:#fff; }
+    .btn-action-delete { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+    .btn-action-delete:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(239,68,68,0.45); color:#fff; }
     .btn { transition: all 0.2s; }
+    /* Top flash banner */
+    .flash-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; min-width:320px; max-width:520px; border-radius:12px; padding:14px 22px; font-size:0.93rem; font-weight:600; display:flex; align-items:center; gap:10px; box-shadow:0 8px 32px rgba(0,0,0,0.35); animation:slideDown 0.35s ease; }
+    .flash-banner.success { background:linear-gradient(135deg,#10b981,#059669); color:#fff; }
+    .flash-banner.error   { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+    @keyframes slideDown { from { top:-60px; opacity:0; } to { top:20px; opacity:1; } }
 </style>
 
 <div class="container-fluid">
@@ -114,11 +113,10 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.staff.show', $member->id) }}"
-                                   class="btn btn-sm btn-info text-white">
+                                   class="btn-action btn-action-view me-1">
                                     <i class="fas fa-eye"></i> View
                                 </a>
-                                <!-- Delete triggers modal -->
-                                <button type="button" class="btn btn-sm btn-danger"
+                                <button type="button" class="btn-action btn-action-delete"
                                         data-member-id="{{ $member->id }}"
                                         data-member-name="{{ $member->name }}"
                                         onclick="confirmDelete(this)">

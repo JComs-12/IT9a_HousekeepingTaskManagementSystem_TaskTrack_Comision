@@ -22,17 +22,30 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Name</label>
+                                    <label class="form-label fw-bold">First Name</label>
                                     <input type="text"
-                                           name="name"
-                                           class="form-control @error('name') is-invalid @enderror"
-                                           placeholder="Enter full name"
-                                           value="{{ old('name') }}">
-                                    @error('name')
+                                           name="first_name"
+                                           class="form-control @error('first_name') is-invalid @enderror"
+                                           placeholder="Enter first name"
+                                           value="{{ old('first_name') }}">
+                                    @error('first_name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Last Name</label>
+                                    <input type="text"
+                                           name="last_name"
+                                           class="form-control @error('last_name') is-invalid @enderror"
+                                           placeholder="Enter last name"
+                                           value="{{ old('last_name') }}">
+                                    @error('last_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Email</label>
                                     <input type="email"
@@ -44,7 +57,85 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Phone</label>
+                                    <input type="text"
+                                           name="phone"
+                                           class="form-control @error('phone') is-invalid @enderror"
+                                           placeholder="Enter phone number"
+                                           value="{{ old('phone') }}">
+                                    @error('phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Gender</label>
+                                    <select name="gender"
+                                            class="form-select @error('gender') is-invalid @enderror">
+                                        <option value="">Select gender</option>
+                                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                                        <option value="prefer_not_to_say" {{ old('gender') == 'prefer_not_to_say' ? 'selected' : '' }}>Prefer not to say</option>
+                                    </select>
+                                    @error('gender')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Status</label>
+                                    <select name="status"
+                                            class="form-select @error('status') is-invalid @enderror">
+                                        <option value="">-- Select Status --</option>
+                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Address</label>
+                                    <input type="text"
+                                           name="address"
+                                           class="form-control @error('address') is-invalid @enderror"
+                                           placeholder="Enter address"
+                                           value="{{ old('address') }}">
+                                    @error('address')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Birthdate</label>
+                                    <input type="date"
+                                           name="birthdate"
+                                           class="form-control @error('birthdate') is-invalid @enderror"
+                                           value="{{ old('birthdate') }}">
+                                    @error('birthdate')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Age</label>
+                                    <input type="number"
+                                           name="age"
+                                           class="form-control @error('age') is-invalid @enderror"
+                                           placeholder="Enter age"
+                                           value="{{ old('age') }}"
+                                           min="16" max="120">
+                                    @error('age')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Password</label>
                                     <div class="password-wrapper">
@@ -61,7 +152,9 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Confirm Password</label>
                                     <div class="password-wrapper">
@@ -75,31 +168,6 @@
                                         </button>
                                     </div>
                                     @error('password_confirmation')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Phone</label>
-                                    <input type="text"
-                                           name="phone"
-                                           class="form-control @error('phone') is-invalid @enderror"
-                                           placeholder="Enter phone number"
-                                           value="{{ old('phone') }}">
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Status</label>
-                                    <select name="status"
-                                            class="form-select @error('status') is-invalid @enderror">
-                                        <option value="">-- Select Status --</option>
-                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                    </select>
-                                    @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

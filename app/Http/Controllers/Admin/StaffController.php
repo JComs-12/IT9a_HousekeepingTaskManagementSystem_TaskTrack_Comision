@@ -48,27 +48,47 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:staff,email|unique:users,email',
-            'password' => 'required|confirmed|min:8',
-            'phone'    => 'required|string|max:20',
-            'status'   => 'required|in:active,inactive',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:staff,email|unique:users,email',
+            'password'   => 'required|confirmed|min:8',
+            'phone'      => 'required|string|max:20',
+            'address'    => 'required|string|max:255',
+            'birthdate'  => 'required|date|before:today',
+            'age'        => 'required|integer|min:16|max:120',
+            'gender'     => 'required|string|in:male,female,other,prefer_not_to_say',
+            'status'     => 'required|in:active,inactive',
         ]);
 
         DB::transaction(function () use ($request) {
+            $fullName = trim($request->first_name . ' ' . $request->last_name);
+
             $staff = Staff::create([
-                'name'   => $request->name,
-                'email'  => $request->email,
-                'phone'  => $request->phone,
-                'status' => $request->status,
+                'name'       => $fullName,
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'address'    => $request->address,
+                'birthdate'  => $request->birthdate,
+                'age'        => $request->age,
+                'gender'     => $request->gender,
+                'status'     => $request->status,
             ]);
 
             User::create([
-                'name'     => $request->name,
-                'email'    => $request->email,
-                'password' => Hash::make($request->password),
-                'role'     => 'staff',
-                'staff_id' => $staff->id,
+                'name'       => $fullName,
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'address'    => $request->address,
+                'birthdate'  => $request->birthdate,
+                'age'        => $request->age,
+                'gender'     => $request->gender,
+                'password'   => Hash::make($request->password),
+                'role'       => 'staff',
+                'staff_id'   => $staff->id,
             ]);
         });
 

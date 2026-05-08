@@ -41,6 +41,7 @@ class RegisteredUserController extends Controller
             'address' => ['required', 'string', 'max:255'],
             'birthdate' => ['required', 'date', 'before:today'],
             'age' => ['required', 'integer', 'min:16', 'max:120'],
+            'gender' => ['required', 'string', 'in:male,female,other,prefer_not_to_say'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -55,12 +56,20 @@ class RegisteredUserController extends Controller
             'address' => $request->address,
             'birthdate' => $request->birthdate,
             'age' => $request->age,
+            'gender' => $request->gender,
             'status' => 'active',
         ]);
 
         $user = User::create([
             'name' => $fullName,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'birthdate' => $request->birthdate,
+            'age' => $request->age,
+            'gender' => $request->gender,
             'password' => Hash::make($request->password),
             'role' => 'staff',
             'staff_id' => $staff->id,

@@ -13,10 +13,14 @@
     .search-wrapper .fas { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaaaaa; }
     .search-wrapper input { padding-left: 36px; }
 
-    /* Action buttons hover */
-    .btn-warning:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,193,7,0.4); }
-    .btn-danger:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,53,69,0.4); }
-    .btn-primary:hover { transform: translateY(-1px); }
+    /* Modern action buttons */
+    .btn-action { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:all 0.22s; letter-spacing:0.3px; }
+    .btn-action-edit  { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+    .btn-action-edit:hover  { transform:translateY(-2px); box-shadow:0 6px 18px rgba(245,158,11,0.45); color:#fff; }
+    .btn-action-delete { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+    .btn-action-delete:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(239,68,68,0.45); color:#fff; }
+    .btn-action-view  { background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; }
+    .btn-action-view:hover  { transform:translateY(-2px); box-shadow:0 6px 18px rgba(59,130,246,0.45); color:#fff; }
     .btn { transition: all 0.2s; }
 </style>
 
@@ -118,11 +122,10 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.rooms.edit', $room->id) }}"
-                                   class="btn btn-sm btn-warning">
+                                   class="btn-action btn-action-edit me-1">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <!-- Delete triggers modal -->
-                                <button type="button" class="btn btn-sm btn-danger"
+                                <button type="button" class="btn-action btn-action-delete"
                                         onclick="confirmDelete({{ $room->id }}, 'Room {{ $room->room_number }}')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>

@@ -292,6 +292,19 @@
 
                 <div class="mb-3">
                     <label class="form-label">
+                        <i class="fas fa-venus-mars me-2" style="color: #e94560;"></i>Gender
+                    </label>
+                    <select name="gender" class="form-control" required>
+                        <option value="">Select gender</option>
+                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                        <option value="prefer_not_to_say" {{ old('gender') == 'prefer_not_to_say' ? 'selected' : '' }}>Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
                         <i class="fas fa-map-marker-alt me-2" style="color: #e94560;"></i>Address
                     </label>
                     <input type="text"

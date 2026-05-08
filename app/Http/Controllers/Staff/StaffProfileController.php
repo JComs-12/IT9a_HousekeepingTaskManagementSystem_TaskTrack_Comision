@@ -30,11 +30,13 @@ class StaffProfileController extends Controller
             'address'    => 'required|string|max:255',
             'birthdate'  => 'required|date|before:today',
             'age'        => 'required|integer|min:16|max:120',
+            'gender'     => 'required|string|in:male,female,other,prefer_not_to_say',
         ]);
 
         $user->update([
-            'name'  => $request->name,
-            'email' => $request->email,
+            'name'   => $request->name,
+            'email'  => $request->email,
+            'gender' => $request->gender,
         ]);
 
         if ($staff) {
@@ -46,6 +48,7 @@ class StaffProfileController extends Controller
                 'address'    => $request->address,
                 'birthdate'  => $request->birthdate,
                 'age'        => $request->age,
+                'gender'     => $request->gender,
             ]);
         }
 
@@ -84,14 +87,14 @@ class StaffProfileController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()
-                ->withErrors($validator)
+                ->withErrors($validator, 'passwordUpdate')
                 ->withInput($request->except(['current_password', 'password', 'password_confirmation']))
                 ->with('error', 'Please fix the password errors below.');
         }
 
         if (!Hash::check($request->current_password, Auth::user()->password)) {
             return redirect()->back()
-                ->withErrors(['current_password' => 'Current password is incorrect!'])
+                ->withErrors(['current_password' => 'Current password is incorrect!'], 'passwordUpdate')
                 ->withInput($request->except(['current_password', 'password', 'password_confirmation']))
                 ->with('error', 'Please fix the password errors below.');
         }

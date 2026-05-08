@@ -1,5 +1,16 @@
 <x-app-layout>
-    @section('page-title', 'System Activity Logs')
+@section('page-title', 'Activity Logs')
+<style>
+    .role-admin  { background:rgba(99,102,241,0.18); color:#818cf8; border-radius:20px; padding:3px 11px; font-size:0.75rem; font-weight:700; }
+    .role-staff  { background:rgba(16,185,129,0.18); color:#34d399; border-radius:20px; padding:3px 11px; font-size:0.75rem; font-weight:700; }
+    .role-system { background:rgba(100,116,139,0.18);color:#94a3b8; border-radius:20px; padding:3px 11px; font-size:0.75rem; font-weight:700; }
+    .action-badge { border-radius:20px; padding:3px 10px; font-size:0.75rem; font-weight:600; }
+    .action-important { background:rgba(245,158,11,0.18); color:#fbbf24; }
+    .action-normal    { background:rgba(14,165,233,0.18);  color:#38bdf8; }
+    .btn-del { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#f87171; transition:all 0.2s; cursor:pointer; }
+    .btn-del:hover { background:rgba(239,68,68,0.3); color:#fff; box-shadow:0 4px 12px rgba(239,68,68,0.3); }
+    .table tbody tr { transition:background 0.15s; }
+</style>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -54,25 +65,24 @@
                                 </td>
                                 <td>
                                     @if($log->role === 'admin')
-                                        <span class="badge bg-primary">Admin</span>
+                                        <span class="role-admin"><i class="fas fa-user-shield me-1"></i>Admin</span>
+                                    @elseif($log->role === 'staff')
+                                        <span class="role-staff"><i class="fas fa-user me-1"></i>Staff</span>
                                     @else
-                                        <span class="badge bg-secondary">Staff</span>
+                                        <span class="role-system"><i class="fas fa-cog me-1"></i>System</span>
                                     @endif
                                 </td>
                                 <td>
                                     @if($log->is_important)
-                                        <span class="badge bg-warning text-dark" title="Important Action">
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ $log->action }}
-                                        </span>
+                                        <span class="action-badge action-important"><i class="fas fa-star me-1"></i>{{ $log->action }}</span>
                                     @else
-                                        <span class="badge bg-info text-dark">{{ $log->action }}</span>
+                                        <span class="action-badge action-normal">{{ $log->action }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $log->description }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                            onclick="deleteLog({{ $log->id }})">
-                                        <i class="fas fa-trash"></i> Delete
+                                    <button type="button" class="btn-del" onclick="deleteLog({{ $log->id }})" title="Delete log">
+                                        <i class="fas fa-trash-alt" style="font-size:0.75rem;"></i>
                                     </button>
                                 </td>
                             </tr>

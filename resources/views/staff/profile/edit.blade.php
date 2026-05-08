@@ -1,4 +1,20 @@
 <x-staff-layout>
+<style>
+    .flash-banner {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        z-index: 9999; min-width: 340px; max-width: 560px;
+        border-radius: 14px; padding: 15px 24px;
+        font-size: 0.93rem; font-weight: 600;
+        display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 10px 36px rgba(0,0,0,0.4);
+        animation: bannerSlideDown 0.38s cubic-bezier(.21,1.02,.73,1) both;
+    }
+    .flash-banner.flash-success { background: linear-gradient(135deg,#10b981,#059669); color: #fff; }
+    .flash-banner.flash-error   { background: linear-gradient(135deg,#ef4444,#b91c1c); color: #fff; }
+    .flash-banner .flash-close  { margin-left: auto; background: rgba(255,255,255,0.25); border: none; color: #fff; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
+    .flash-banner .flash-close:hover { background: rgba(255,255,255,0.4); }
+    @keyframes bannerSlideDown { from { top: -70px; opacity:0; } to { top: 20px; opacity:1; } }
+</style>
     @php
         $staff = Auth::user()->staff;
     @endphp
@@ -12,31 +28,38 @@
             </div>
         </div>
 
-        <div class="mb-4" style="position:sticky;top:80px;z-index:1000;">
-            @if(session('success'))
-                <div class="alert alert-success" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    <strong>There was a problem updating your password.</strong>
-                    <ul class="mb-0 mt-2 ps-3">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+        <!-- TOP FLASH BANNER -->
+        @php
+            $pwdErrors  = $errors->passwordUpdate;
+            $hasSuccess = session('success');
+            $hasError   = session('error') || $errors->default->any();
+            $hasPwdErr  = $pwdErrors->any();
+            $flashType  = ($hasSuccess) ? 'flash-success' : 'flash-error';
+            $flashMsg   = $hasSuccess ? session('success') :
+                         (session('error') ? session('error') :
+                         ($errors->default->any() ? 'Please fix the errors below.' : null));
+        @endphp
+        @if($hasSuccess || $hasError)
+            <div class="flash-banner {{ $flashType }}" id="topFlashBanner">
+                <i class="fas {{ $hasSuccess ? 'fa-check-circle' : 'fa-exclamation-circle' }} fa-lg"></i>
+                <span>{{ $flashMsg }}</span>
+                <button class="flash-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            </div>
+            <script>setTimeout(()=>{ const b=document.getElementById('topFlashBanner'); if(b){b.style.opacity=0; setTimeout(()=>{b.remove();},400);} },5000);</script>
+        @endif
+        @if($hasPwdErr)
+            <div class="flash-banner flash-error" id="pwdFlashBanner">
+                <i class="fas fa-exclamation-circle fa-lg"></i>
+                <div>
+                    <div>Password update failed:</div>
+                    <ul class="mb-0 mt-1" style="font-size:0.85rem; font-weight:400;">
+                        @foreach($pwdErrors->all() as $err)<li>{{ $err }}</li>@endforeach
                     </ul>
                 </div>
-            @endif
-        </div>
+                <button class="flash-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            </div>
+            <script>setTimeout(()=>{ const b=document.getElementById('pwdFlashBanner'); if(b){b.style.opacity=0; setTimeout(()=>{b.remove();},400);} },7000);</script>
+        @endif
 
         <div class="row g-4">
             <!-- Avatar Card -->
@@ -67,6 +90,7 @@
                         <div class="text-start mb-3">
                             <p class="mb-2"><strong>First Name:</strong> {{ $staff->first_name }}</p>
                             <p class="mb-2"><strong>Last Name:</strong> {{ $staff->last_name }}</p>
+                            <p class="mb-2"><strong>Gender:</strong> {{ str_replace('_', ' ', ucfirst($staff->gender ?? 'Not specified')) }}</p>
                             <p class="mb-2"><strong>Phone:</strong> {{ $staff->phone }}</p>
                             <p class="mb-2"><strong>Address:</strong> {{ $staff->address }}</p>
                             <p class="mb-2"><strong>Birthdate:</strong> {{ optional($staff->birthdate)->format('M d, Y') }}</p>
@@ -175,15 +199,33 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">
-                                        <i class="fas fa-map-marker-alt me-2" style="color:#e94560;"></i>Address
+                                        <i class="fas fa-venus-mars me-2" style="color:#e94560;"></i>Gender
                                     </label>
-                                    <input type="text" name="address"
-                                           class="form-control @error('address') is-invalid @enderror"
-                                           value="{{ old('address', $staff?->address) }}" required>
-                                    @error('address')
+                                    <select name="gender"
+                                            class="form-select @error('gender') is-invalid @enderror"
+                                            required>
+                                        <option value="">Select gender</option>
+                                        <option value="male" {{ old('gender', $staff?->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender', $staff?->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other" {{ old('gender', $staff?->gender) == 'other' ? 'selected' : '' }}>Other</option>
+                                        <option value="prefer_not_to_say" {{ old('gender', $staff?->gender) == 'prefer_not_to_say' ? 'selected' : '' }}>Prefer not to say</option>
+                                    </select>
+                                    @error('gender')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-map-marker-alt me-2" style="color:#e94560;"></i>Address
+                                </label>
+                                <input type="text" name="address"
+                                       class="form-control @error('address') is-invalid @enderror"
+                                       value="{{ old('address', $staff?->address) }}" required>
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row">
@@ -228,14 +270,14 @@
                             @csrf
                             @method('PUT')
 
-                            <!-- Current Password with toggle -->
+                            <!-- Current Password -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold">
                                     <i class="fas fa-lock me-2" style="color:#e94560;"></i>Current Password
                                 </label>
                                 <div class="input-group">
                                     <input type="password" name="current_password" id="currentPassword"
-                                           class="form-control @error('current_password') is-invalid @enderror"
+                                           class="form-control @if($errors->passwordUpdate->has('current_password')) is-invalid @endif"
                                            placeholder="Enter current password">
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="togglePassword('currentPassword', this)"
@@ -243,19 +285,19 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                                @error('current_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @if($errors->passwordUpdate->has('current_password'))
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;"><i class="fas fa-exclamation-circle me-1"></i>{{ $errors->passwordUpdate->first('current_password') }}</div>
+                                @endif
                             </div>
 
-                            <!-- New Password with toggle -->
+                            <!-- New Password -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold">
                                     <i class="fas fa-key me-2" style="color:#e94560;"></i>New Password
                                 </label>
                                 <div class="input-group">
                                     <input type="password" name="password" id="newPassword"
-                                           class="form-control @error('password') is-invalid @enderror"
+                                           class="form-control @if($errors->passwordUpdate->has('password')) is-invalid @endif"
                                            placeholder="Enter new password">
                                     <button type="button" class="btn btn-outline-secondary"
                                             onclick="togglePassword('newPassword', this)"
@@ -263,9 +305,9 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                @if($errors->passwordUpdate->has('password'))
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;"><i class="fas fa-exclamation-circle me-1"></i>{{ $errors->passwordUpdate->first('password') }}</div>
+                                @endif
                             </div>
 
                             <!-- Confirm Password with toggle -->

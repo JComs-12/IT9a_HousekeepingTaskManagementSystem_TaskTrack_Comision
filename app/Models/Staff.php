@@ -15,6 +15,7 @@ class Staff extends Model
         'address',
         'birthdate',
         'age',
+        'gender',
         'status',
     ];
 

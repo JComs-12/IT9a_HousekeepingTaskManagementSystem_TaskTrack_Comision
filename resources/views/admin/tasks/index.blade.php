@@ -2,7 +2,17 @@
     @php
         $highlightTaskId = request('highlight_task');
     @endphp
-    <div class="container-fluid">
+    <style>
+        .btn-action { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:all 0.22s; letter-spacing:0.3px; }
+        .btn-action-edit   { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+        .btn-action-edit:hover   { transform:translateY(-2px); box-shadow:0 6px 18px rgba(245,158,11,0.45); color:#fff; }
+        .btn-action-delete { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+        .btn-action-delete:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(239,68,68,0.45); color:#fff; }
+        .flash-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; min-width:320px; max-width:520px; border-radius:12px; padding:14px 22px; font-size:0.93rem; font-weight:600; display:flex; align-items:center; gap:10px; box-shadow:0 8px 32px rgba(0,0,0,0.35); animation:slideDown 0.35s ease; }
+        .flash-banner.success { background:linear-gradient(135deg,#10b981,#059669); color:#fff; }
+        .flash-banner.error   { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+        @keyframes slideDown { from { top:-60px; opacity:0; } to { top:20px; opacity:1; } }
+    </style>
         <div class="row mb-4">
             <div class="col-12 d-flex justify-content-between align-items-center">
                 <div>
@@ -118,11 +128,10 @@
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.tasks.edit', $task->id) }}"
-                                               class="btn btn-sm btn-warning">
+                                               class="btn-action btn-action-edit me-1">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <!-- Delete triggers modal -->
-                                            <button type="button" class="btn btn-sm btn-danger"
+                                            <button type="button" class="btn-action btn-action-delete"
                                                     data-task-id="{{ $task->id }}"
                                                     data-task-name="{{ $task->task_name }}"
                                                     onclick="confirmDelete(this)">
@@ -217,11 +226,10 @@
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.tasks.edit', $task->id) }}"
-                                               class="btn btn-sm btn-warning">
+                                               class="btn-action btn-action-edit me-1">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <!-- Delete triggers modal -->
-                                            <button type="button" class="btn btn-sm btn-danger"
+                                            <button type="button" class="btn-action btn-action-delete"
                                                     data-task-id="{{ $task->id }}"
                                                     data-task-name="{{ $task->task_name }}"
                                                     onclick="confirmDelete(this)">

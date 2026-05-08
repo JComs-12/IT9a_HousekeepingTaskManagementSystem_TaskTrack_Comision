@@ -118,6 +118,24 @@
                                 </div>
                             </div>
 
+                            <!-- Gender -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-venus-mars me-2" style="color:#e94560;"></i>Gender
+                                </label>
+                                <select name="gender"
+                                        class="form-select @error('gender') is-invalid @enderror" required>
+                                    <option value="">Select gender</option>
+                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                                    <option value="prefer_not_to_say" {{ old('gender') == 'prefer_not_to_say' ? 'selected' : '' }}>Prefer not to say</option>
+                                </select>
+                                @error('gender')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Password Fields -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">

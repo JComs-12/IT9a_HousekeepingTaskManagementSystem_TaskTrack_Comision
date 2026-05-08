@@ -27,6 +27,7 @@ class AdminAccountController extends Controller
             'address' => 'required|string|max:255',
             'birthdate' => 'required|date|before:today',
             'age' => 'required|integer|min:18|max:120',
+            'gender' => 'required|in:male,female,other,prefer_not_to_say',
         ]);
 
         $fullName = trim($request->first_name.' '.$request->last_name);
@@ -40,6 +41,7 @@ class AdminAccountController extends Controller
             'address' => $request->address,
             'birthdate' => $request->birthdate,
             'age' => $request->age,
+            'gender' => $request->gender,
             'password' => Hash::make($request->password),
             'role' => 'admin',
         ]);
