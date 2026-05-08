@@ -126,4 +126,4 @@ EXPOSE 10000
 
 
 
-CMD ["php-fpm"]
+CMD bash -c "php artisan migrate --force && apache2-foreground"
