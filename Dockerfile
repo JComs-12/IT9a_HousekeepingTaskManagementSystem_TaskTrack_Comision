@@ -126,4 +126,4 @@ EXPOSE 10000
 
 
 
-CMD bash -c "php artisan migrate --force && apache2-foreground"
+CMD bash -c "php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
