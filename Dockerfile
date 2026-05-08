@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache rewrite
 
 RUN a2enmod rewrite
-
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 
 # Make Apache use Render's default web port 10000
@@ -124,6 +124,6 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 
 EXPOSE 10000
 
-
+ENV PORT=10000
 
 CMD bash -c "php artisan migrate --force && php artisan db:seed --force && apache2-foreground"
