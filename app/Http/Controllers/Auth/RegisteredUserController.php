@@ -44,7 +44,7 @@ class RegisteredUserController extends Controller
             'password'   => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $age = now()->diffInYears(\Carbon\Carbon::parse($request->birthdate));
+       $age = \Carbon\Carbon::parse($request->birthdate)->age;
 
         $fullName = trim($request->first_name.' '.$request->last_name);
 
