@@ -9,15 +9,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            $table->string('first_name')->nullable()->after('name');
-            $table->string('last_name')->nullable()->after('first_name');
-            $table->string('address')->nullable()->after('phone');
-            $table->date('birthdate')->nullable()->after('address');
-            $table->integer('age')->nullable()->after('birthdate');
-            $table->enum('gender', ['male', 'female'])->nullable()->after('age');
-            $table->string('avatar')->nullable()->after('gender');
-            $table->softDeletes()->after('updated_at');
-            $table->string('deletion_reason')->nullable()->after('deleted_at');
+            if (!Schema::hasColumn('staff', 'first_name'))
+                $table->string('first_name')->nullable()->after('name');
+            if (!Schema::hasColumn('staff', 'last_name'))
+                $table->string('last_name')->nullable()->after('first_name');
+            if (!Schema::hasColumn('staff', 'address'))
+                $table->string('address')->nullable()->after('phone');
+            if (!Schema::hasColumn('staff', 'birthdate'))
+                $table->date('birthdate')->nullable()->after('address');
+            if (!Schema::hasColumn('staff', 'age'))
+                $table->integer('age')->nullable()->after('birthdate');
+            if (!Schema::hasColumn('staff', 'gender'))
+                $table->enum('gender', ['male', 'female'])->nullable()->after('age');
+            if (!Schema::hasColumn('staff', 'avatar'))
+                $table->string('avatar')->nullable()->after('gender');
+            if (!Schema::hasColumn('staff', 'deleted_at'))
+                $table->softDeletes()->after('updated_at');
+            if (!Schema::hasColumn('staff', 'deletion_reason'))
+                $table->string('deletion_reason')->nullable()->after('deleted_at');
         });
     }
 
