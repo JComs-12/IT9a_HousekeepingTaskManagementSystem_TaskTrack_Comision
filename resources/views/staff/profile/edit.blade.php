@@ -233,7 +233,7 @@
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-calendar-alt me-2" style="color:#e94560;"></i>Birthdate
                                     </label>
-                                    <input type="date" name="birthdate"
+                                    <input type="date" name="birthdate" id="birthdateInput"
                                            class="form-control @error('birthdate') is-invalid @enderror"
                                            value="{{ old('birthdate', optional($staff?->birthdate)->format('Y-m-d')) }}" required>
                                     @error('birthdate')
@@ -243,13 +243,13 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-users me-2" style="color:#e94560;"></i>Age
+                                        <small class="text-muted fw-normal">(auto-calculated)</small>
                                     </label>
-                                    <input type="number" name="age"
-                                           class="form-control @error('age') is-invalid @enderror"
-                                           value="{{ old('age', $staff?->age) }}" min="16" max="120" required>
-                                    @error('age')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <input type="number" name="age" id="ageInput"
+                                           class="form-control"
+                                           value="{{ old('age', $staff?->age) }}"
+                                           readonly
+                                           style="background-color: rgba(255,255,255,0.05); cursor: not-allowed;">
                                 </div>
                             </div>
 
@@ -354,6 +354,34 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
                 btn.style.color = '#aaaaaa';
             }
+        }
+
+        // Auto-calculate age from birthdate
+        function calculateAge(birthdate) {
+            if (!birthdate) return '';
+            const today = new Date();
+            const birth = new Date(birthdate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        const birthdateInput = document.getElementById('birthdateInput');
+        const ageInput = document.getElementById('ageInput');
+
+        // Calculate on page load in case value is already set
+        if (birthdateInput && birthdateInput.value) {
+            ageInput.value = calculateAge(birthdateInput.value);
+        }
+
+        // Recalculate whenever birthdate changes
+        if (birthdateInput) {
+            birthdateInput.addEventListener('change', function () {
+                ageInput.value = calculateAge(this.value);
+            });
         }
     </script>
 </x-staff-layout>

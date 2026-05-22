@@ -20,7 +20,7 @@ return new class extends Migration
             if (!Schema::hasColumn('staff', 'age'))
                 $table->integer('age')->nullable()->after('birthdate');
             if (!Schema::hasColumn('staff', 'gender'))
-                $table->enum('gender', ['male', 'female'])->nullable()->after('age');
+                $table->string('gender')->nullable()->after('age');
             if (!Schema::hasColumn('staff', 'avatar'))
                 $table->string('avatar')->nullable()->after('gender');
             if (!Schema::hasColumn('staff', 'deleted_at'))

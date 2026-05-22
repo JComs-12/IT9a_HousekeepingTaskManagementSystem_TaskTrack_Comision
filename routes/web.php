@@ -48,15 +48,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::resource('admins', AdminController::class)->except(['edit', 'update', 'show']);
         Route::resource('rooms', RoomController::class);
         Route::resource('staff', StaffController::class)->except(['edit', 'update']);
-        Route::resource('tasks', TaskController::class);
+
+        // delete-selected MUST come before resource to avoid {task} wildcard shadowing it
         Route::delete('/tasks/delete-selected', [TaskController::class, 'deleteSelected'])->name('tasks.delete-selected');
+        Route::resource('tasks', TaskController::class);
+
+        // delete-selected MUST come before resource to avoid {staff_report} wildcard shadowing it
+        Route::delete('/staff-reports/delete-selected', [AdminStaffReportController::class, 'deleteSelected'])->name('staff-reports.delete-selected');
         Route::resource('staff-reports', AdminStaffReportController::class)->only([
             'index',
             'update',
             'destroy',
         ]);
-        Route::delete('/staff-reports/delete-selected', [AdminStaffReportController::class, 'deleteSelected'])->name('staff-reports.delete-selected');
+
         Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
+        // delete-selected MUST come before {log} to avoid wildcard shadowing it
         Route::delete('/logs/delete-selected', [ActivityLogController::class, 'deleteSelected'])->name('logs.delete-selected');
         Route::delete('/logs/{log}', [ActivityLogController::class, 'destroy'])->name('logs.destroy');
     });

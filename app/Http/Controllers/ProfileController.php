@@ -19,7 +19,11 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // Auto-calculate age from birthdate server-side
+        $age = \Carbon\Carbon::parse($request->birthdate)->age;
+
         $request->user()->fill($request->validated());
+        $request->user()->age = $age;
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;

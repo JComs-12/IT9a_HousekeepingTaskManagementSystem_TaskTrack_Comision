@@ -26,7 +26,6 @@ class User extends Authenticatable
         'role',
         'staff_id',
         'avatar',
-        'deleted_at',
         'deletion_reason',
     ];
 

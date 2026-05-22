@@ -31,7 +31,6 @@ class ProfileUpdateRequest extends FormRequest
             'phone' => ['required', 'string', 'max:30'],
             'address' => ['required', 'string', 'max:255'],
             'birthdate' => ['required', 'date', 'before:today'],
-            'age' => ['required', 'integer', 'min:16', 'max:120'],
             'gender' => ['required', 'string', 'in:male,female,other,prefer_not_to_say'],
         ];
     }
